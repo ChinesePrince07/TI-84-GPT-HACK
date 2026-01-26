@@ -11,7 +11,7 @@ A mod for the TI-84 Plus Silver Edition & TI-84 Plus C Silver Edition calculator
 ## Features
 
 - ChatGPT integration - ask questions directly from your calculator
-- Wi-Fi connectivity via ESP32
+- Wi-Fi connectivity via ESP32 with **captive portal configuration**
 - Program downloads over the air
 - Image display support
 - Chat functionality
@@ -29,14 +29,27 @@ A mod for the TI-84 Plus Silver Edition & TI-84 Plus C Silver Edition calculator
 ## Setup
 
 ### 1. ESP32 Setup
-1. Copy `esp32/secrets.h.example` to `esp32/secrets.h`
-2. Edit `secrets.h` and add your WiFi name and password
-3. Flash the code in `/esp32` to your ESP32
+1. Flash the code in `/esp32` to your ESP32
+2. No configuration files needed!
 
-The server is pre-configured - no need to set up your own!
+### 2. WiFi Configuration (Captive Portal)
+1. Power on the ESP32
+2. Connect to the WiFi network named **"calc"** from your phone/computer
+3. A captive portal will automatically open (or navigate to `192.168.4.1`)
+4. Enter your WiFi name and password
+5. Click "Save & Connect"
+6. The ESP32 will connect to your network and remember the settings
 
-### 2. Calculator Setup
+The server is pre-configured - no need to run your own!
+
+### 3. Calculator Setup
 Transfer the LAUNCHER program to your calculator using the TI-84 menu.
+
+## Reconfiguring WiFi
+
+If you need to change WiFi settings:
+- The captive portal is available for a few seconds on every boot
+- Or erase ESP32 flash and re-upload the firmware
 
 ## Commands
 
