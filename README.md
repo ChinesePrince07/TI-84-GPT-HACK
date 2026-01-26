@@ -42,48 +42,7 @@ The TI-BASIC launcher program on your calculator provides the UI - it sends comm
 
 ## Hardware Assembly
 
-**Warning:** This will void your warranty and possibly destroy your calculator if done wrong.
-
-### Understanding the Circuit
-
-The calculator's link port uses TIP and RING signals (like a headphone jack) at 3.3V logic levels - except when it doesn't. The ESP32 also runs at 3.3V, but the two don't play nice directly due to timing and drive strength issues. The MOSFETs act as bidirectional level shifters, cleaning up the signals.
-
-### PCB Assembly
-
-1. Order the PCB using the gerber files in `/pcb/0.1/`. Any cheap fab house works (JLCPCB, PCBWay, etc.). 1.6mm thickness, any color.
-
-2. Solder the components in this order:
-   - MOSFETs first (they're the smallest and most annoying)
-   - 1kΩ resistors
-   - Pin headers for the ESP32 (or solder it directly if you hate yourself)
-
-3. The silkscreen labels show: 5V, GND, TIP, RING. These connect to the calculator.
-
-### Calculator Surgery
-
-1. Remove the 6 screws from the back of your TI-84. Keep track of which ones go where - they're different lengths.
-
-2. Carefully separate the case halves. There's a ribbon cable connecting them - don't yank it.
-
-3. Locate the link port on the PCB. It's the 2.5mm jack at the top. You need to solder wires to the TIP and RING pads on the calculator's mainboard. These are usually labeled or you can trace them from the jack.
-
-4. Find 5V and GND. The battery terminals are an easy source. 5V is the positive terminal of the battery pack, GND is negative.
-
-5. Route the wires to wherever you're mounting the ESP32 PCB. Most people tuck it behind the screen or in the battery compartment (requires removing a battery or using a slimmer pack).
-
-6. Connect:
-   - Calculator TIP → PCB TIP
-   - Calculator RING → PCB RING
-   - Calculator 5V → PCB 5V
-   - Calculator GND → PCB GND
-
-7. Triple-check your connections. Reversed polarity will fry the ESP32. Wrong TIP/RING will just not work.
-
-8. Reassemble and pray.
-
-### Testing
-
-Power on the calculator. If it still works, good. If the ESP32's LED blinks, even better. Connect to the "calc" WiFi network and configure your credentials. Run the launcher program and try the connect command.
+Order the PCB from `/pcb/0.1/`, solder the components, wire TIP/RING/5V/GND to your calculator's link port and battery terminals. Check the schematic if you get stuck. If you fry something, that's on you.
 
 ## Software Setup
 
@@ -101,10 +60,37 @@ Power on the calculator. If it still works, good. If the ESP32's LED blinks, eve
 5. Click "Save & Connect"
 6. The ESP32 will connect to your network and remember the settings
 
-The server is pre-configured - no need to run your own!
+The server is pre-configured to use my hosted instance - no need to run your own!
 
 ### 3. Calculator Setup
 Transfer the LAUNCHER program to your calculator using the TI-84 menu (Settings → Update).
+
+## Running Your Own Server (Optional)
+
+By default, the ESP32 connects to my hosted server. If you want to run your own:
+
+1. Set up the server:
+   ```bash
+   cd server
+   npm install
+   ```
+
+2. Create `server/.env` and add your OpenAI API key:
+   ```
+   OPENAI_API_KEY=sk-your-key-here
+   ```
+
+3. Run the server:
+   ```bash
+   node index.mjs
+   ```
+
+4. Expose it with ngrok or similar:
+   ```bash
+   ngrok http 8080
+   ```
+
+5. Change the server URL in `/esp32/esp32.ino` - find the `SERVER` define and update it to your ngrok URL.
 
 ## Reconfiguring WiFi
 
