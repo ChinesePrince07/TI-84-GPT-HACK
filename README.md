@@ -1,4 +1,4 @@
-# ti-67 pandy
+# TI-84
 
 A mod for the TI-84 Plus Silver Edition & TI-84 Plus C Silver Edition calculators to give them internet access and add other features, like test mode breakout and camera support.
 
@@ -11,11 +11,11 @@ A mod for the TI-84 Plus Silver Edition & TI-84 Plus C Silver Edition calculator
 ## Features
 
 - ChatGPT integration - ask questions directly from your calculator
-- Wi-Fi connectivity via ESP32 with **captive portal configuration**
+- Wi-Fi connectivity via ESP32
 - Program downloads over the air
 - Image display support
 - Chat functionality
-- Persistent WiFi settings (survives reboots)
+- **Pre-configured server** - no need to run your own!
 
 ## Hardware Required
 
@@ -28,42 +28,15 @@ A mod for the TI-84 Plus Silver Edition & TI-84 Plus C Silver Edition calculator
 
 ## Setup
 
-### 1. Server Setup
-```bash
-cd server
-npm install
-npm start
-```
-The server runs on port 8080 by default. Use ngrok or similar to expose it:
-```bash
-ngrok http 8080
-```
+### 1. ESP32 Setup
+1. Copy `esp32/secrets.h.example` to `esp32/secrets.h`
+2. Edit `secrets.h` and add your WiFi name and password
+3. Flash the code in `/esp32` to your ESP32
 
-### 2. ESP32 Setup
-1. Flash the code in `/esp32` to your ESP32
-2. **No need to edit any config files!**
+The server is pre-configured - no need to set up your own!
 
-### 3. WiFi Configuration (Captive Portal)
-1. Power on the ESP32
-2. Connect to the WiFi network named **"calc"** from your phone/computer
-3. A captive portal will automatically open (or navigate to `192.168.4.1`)
-4. Enter your settings:
-   - **Hotspot Name (SSID):** Your phone's hotspot or home WiFi name
-   - **Hotspot Password:** Your WiFi password
-   - **Server URL:** Your ngrok URL (e.g., `https://xxx.ngrok-free.app`)
-   - **Chat Name:** Your display name in chat (optional)
-5. Click "Save & Connect"
-6. The ESP32 will connect to your network and remember the settings
-
-### 4. Calculator Setup
-Transfer the LAUNCHER program to your calculator using the TI-32 menu.
-
-## Reconfiguring WiFi
-
-If you need to change WiFi settings:
-- **Method 1:** The captive portal is available for a few seconds on every boot
-- **Method 2:** Send command 15 (reset_config) from the calculator to clear saved settings
-- **Method 3:** Erase ESP32 flash and re-upload the firmware
+### 2. Calculator Setup
+Transfer the LAUNCHER program to your calculator using the TI-84 menu.
 
 ## Commands
 
@@ -79,7 +52,6 @@ If you need to change WiFi settings:
 | 12 | send_chat | Send chat message |
 | 13 | program_list | List available programs |
 | 14 | fetch_program | Download program |
-| 15 | reset_config | **Reset WiFi configuration** |
 
 ## Planned Features
 

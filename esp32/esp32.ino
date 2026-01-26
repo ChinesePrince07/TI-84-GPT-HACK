@@ -1,6 +1,6 @@
-// Project: TI-32 v0.1
-// Author:  ChromaLock
-// Date:    2024
+// Project: TI-84
+// Author:  Andy (ChinesePrince07)
+// Date:    2025
 
 #include "./secrets.h"
 #include "./launcher.h"
