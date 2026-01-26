@@ -2,6 +2,10 @@
 
 A hardware mod that gives your TI-84 calculator internet access, ChatGPT integration, and more.
 
+## Demo
+
+https://github.com/ChinesePrince07/TI-84/raw/master/demo.mp4
+
 ![built pcb](./pcb/built.png)
 
 ## About
