@@ -609,7 +609,6 @@ int makeRequest(String url, char* result, int resultLen, size_t* len) {
   WiFiClient client;
 #endif
   HTTPClient http;
-  http.setAuthorization(HTTP_USERNAME, HTTP_PASSWORD);
 
   Serial.println(url);
   http.begin(client, url.c_str());
@@ -807,7 +806,7 @@ void send_chat() {
   int room = realArgs[0];
   const char* msg = strArgs[1];
 
-  auto url = String(SERVER) + String("/chats/send?c=") + urlEncode(String(room)) + String("&m=") + urlEncode(String(msg)) + String("&id=") + urlEncode(String(CHAT_NAME));
+  auto url = String(SERVER) + String("/chats/send?c=") + urlEncode(String(room)) + String("&m=") + urlEncode(String(msg)) + String("&id=") + urlEncode(storedChatName);
 
   size_t realsize = 0;
   if (makeRequest(url, response, MAXSTRARGLEN, &realsize)) {
