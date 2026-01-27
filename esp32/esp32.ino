@@ -1,4 +1,4 @@
-// Project: TI-84
+// Project: TI-84 GPT HACK
 // Author:  Andy (ChinesePrince07)
 // Date:    2025
 

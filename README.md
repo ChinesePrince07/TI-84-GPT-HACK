@@ -1,4 +1,4 @@
-# TI-84
+# TI-84 GPT HACK
 
 A hardware mod that gives your TI-84 calculator internet access, ChatGPT integration, and more.
 
