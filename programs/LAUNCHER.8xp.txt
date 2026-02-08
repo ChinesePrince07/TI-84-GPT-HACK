@@ -43,11 +43,11 @@ Lbl B0:
 Goto Q1
 
 Lbl W0:
-15->C
-Send(C)
 ClrHome
 Disp "BROADCASTING"
-Disp "PORTAL..."
+Disp "WIFI PORTAL"
+15->C
+Send(C)
 Pause
 Goto Q1
 
