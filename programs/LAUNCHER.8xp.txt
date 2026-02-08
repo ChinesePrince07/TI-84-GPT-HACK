@@ -84,6 +84,7 @@ Pause
 Goto Q1
 
 Lbl G0:
+ClrHome
 2->C
 Disp "Enter Question:"
 Input "",Str0
@@ -97,11 +98,15 @@ Get(Str0)
 ClrHome
 ClrDraw
 Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
 0->K
 Repeat K
 getKey->K
 End
+If K=45:Then
 Goto Q1
+End
+Goto G0
 
 Lbl S0:
 GridOff
