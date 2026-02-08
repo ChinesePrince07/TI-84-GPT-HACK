@@ -65,22 +65,9 @@ const TokenEntry singleTokens[] = {
   { 0x86, "frac(" },
   { 0x87, "sqrt(" },    // legacy sqrt
   { 0x88, "cubert(" },  // cube root
-  { 0x89, "ln(" },
-  { 0x8A, "e^(" },
-  { 0x8B, "log(" },
-  { 0x8C, "10^(" },
-  { 0x8D, "sin(" },
-  { 0x8E, "cos(" },
-  { 0x8F, "tan(" },
-  { 0x90, "arcsin(" },
-  { 0x91, "arccos(" },
-  { 0x92, "arctan(" },
-  { 0x93, "sinh(" },
-  { 0x94, "cosh(" },
-  { 0x95, "tanh(" },
-  { 0x96, "arcsinh(" },
-  { 0x97, "arccosh(" },
-  { 0x98, "arctanh(" },
+  // Exponents
+  { 0x0C, "^-1" },      // inverse ⁻¹
+  { 0x0D, "^2" },       // squared ²
 
   // More functions
   { 0xB0, "-" },        // negative sign
@@ -94,19 +81,26 @@ const TokenEntry singleTokens[] = {
   { 0xB8, "not(" },
   { 0xB9, "iPart(" },
   { 0xBA, "fPart(" },
-  { 0xBC, "sqrt(" },    // square root symbol
-  { 0xBD, "cubert(" },  // cube root symbol
+  { 0xBC, "sqrt(" },    // square root √(
+  { 0xBD, "cubert(" },  // cube root ³√(
   { 0xBE, "ln(" },
-  { 0xBF, "e^" },
+  { 0xBF, "e^(" },
   { 0xC0, "log(" },
-  { 0xC1, "10^" },
-  { 0xC2, "randInt(" },
-  { 0xC3, "randBin(" },
-  { 0xC4, "randNorm(" },
+  { 0xC1, "10^(" },
 
-  // Exponents
-  { 0x0D, "^2" },       // squared ²
-  { 0x0C, "^-1" },      // inverse ⁻¹
+  // Trig functions (correct TI-84 tokens)
+  { 0xC2, "sin(" },
+  { 0xC3, "cos(" },
+  { 0xC4, "tan(" },
+  { 0xC5, "arcsin(" },  // sin⁻¹(
+  { 0xC6, "arccos(" },  // cos⁻¹(
+  { 0xC7, "arctan(" },  // tan⁻¹(
+  { 0xC8, "sinh(" },
+  { 0xC9, "cosh(" },
+  { 0xCA, "tanh(" },
+  { 0xCB, "arcsinh(" }, // sinh⁻¹(
+  { 0xCC, "arccosh(" }, // cosh⁻¹(
+  { 0xCD, "arctanh(" }, // tanh⁻¹(
 
   // Calculus tokens
   { 0xF0, "nDeriv(" },   // numerical derivative
