@@ -806,7 +806,8 @@ void ota_update() {
   Serial.println(serverVersion);
 
   if (serverVersion == FIRMWARE_VERSION) {
-    setSuccess("UP TO DATE");
+    // Use same format as connect() which works
+    setSuccess("CURRENT");
     return;
   }
 
@@ -823,14 +824,14 @@ void ota_update() {
   switch (ret) {
     case HTTP_UPDATE_FAILED:
       Serial.printf("Update failed: %s\n", httpUpdate.getLastErrorString().c_str());
-      setError("UPDATE FAILED");
+      setError("FAILED");
       break;
     case HTTP_UPDATE_NO_UPDATES:
-      setSuccess("NO UPDATES");
+      setSuccess("CURRENT");
       break;
     case HTTP_UPDATE_OK:
       Serial.println("Update OK, rebooting...");
-      setSuccess("REBOOTING");
+      setSuccess("DONE");
       delay(1000);
       ESP.restart();
       break;
