@@ -1,10 +1,15 @@
 {
-  "name": "server",
+  "name": "ti84-gpt-server",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "TI-84 GPT Server",
+  "main": "index.mjs",
+  "type": "module",
   "scripts": {
+    "start": "node index.mjs",
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=18"
   },
   "keywords": [],
   "author": "",

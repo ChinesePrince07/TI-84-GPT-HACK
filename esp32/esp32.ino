@@ -16,7 +16,8 @@
 #include <DNSServer.h>
 
 // Default server URL
-#define SERVER "https://jemma-nonrotating-ayden.ngrok-free.app"
+#define SERVER "https://jemma-nonrotating-ayden.ngrok-free.dev"
+#define SECURE
 
 // Captive portal settings
 #define AP_SSID "calc"
@@ -709,7 +710,7 @@ void send() {
 }
 
 void _sendLauncher() {
-  sendProgramVariable("TI32", __launcher_var, __launcher_var_len);
+  sendProgramVariable("ANDYGPT", __launcher_var, __launcher_var_len);
 }
 
 void launcher() {
