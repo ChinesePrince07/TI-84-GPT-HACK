@@ -128,6 +128,8 @@ If you need to change WiFi settings:
 
 The GPT mode loops so you can have a continuous conversation without navigating back to the menu each time.
 
+**Note:** Use plain text for math questions (e.g., "integrate x squared from 0 to 1") rather than calculator symbols like ∫(. The TI-84's special math tokens aren't fully decoded yet.
+
 ## Troubleshooting
 
 - **ESP32 not responding:** Check your TIP/RING connections. They might be swapped.
@@ -137,7 +139,7 @@ The GPT mode loops so you can have a continuous conversation without navigating 
 
 ## Planned Features
 
-- Support for color images
+- **Math token decoder** - read integrals, derivatives, and other math symbols
 - Multi-page GPT responses
 - Chat history
 - Basic web browsing
@@ -148,6 +150,7 @@ The GPT mode loops so you can have a continuous conversation without navigating 
 
 - Images don't work consistently
 - App transfer occasionally fails
+- **Complex math expressions** (integrals, derivatives, summations) use TI tokens that aren't decoded yet - type questions as plain text instead of using math symbols
 
 ## Credits
 
