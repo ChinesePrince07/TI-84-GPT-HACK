@@ -796,7 +796,7 @@ void ota_update() {
   String versionUrl = String(SERVER) + "/firmware/version";
   size_t realsize = 0;
   if (makeRequest(versionUrl, response, MAXHTTPRESPONSELEN, &realsize)) {
-    setError("failed to check version");
+    setError("CHECK FAILED");
     return;
   }
 
@@ -806,7 +806,7 @@ void ota_update() {
   Serial.println(serverVersion);
 
   if (serverVersion == FIRMWARE_VERSION) {
-    setSuccess("already up to date");
+    setSuccess("UP TO DATE");
     return;
   }
 
@@ -823,14 +823,14 @@ void ota_update() {
   switch (ret) {
     case HTTP_UPDATE_FAILED:
       Serial.printf("Update failed: %s\n", httpUpdate.getLastErrorString().c_str());
-      setError("update failed");
+      setError("UPDATE FAILED");
       break;
     case HTTP_UPDATE_NO_UPDATES:
-      setSuccess("no updates");
+      setSuccess("NO UPDATES");
       break;
     case HTTP_UPDATE_OK:
       Serial.println("Update OK, rebooting...");
-      setSuccess("update complete");
+      setSuccess("REBOOTING");
       delay(1000);
       ESP.restart();
       break;
