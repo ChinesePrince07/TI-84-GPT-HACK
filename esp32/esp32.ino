@@ -726,7 +726,9 @@ void derivative() {
   Serial.print("derivative of: ");
   Serial.println(expr);
 
-  auto url = String(SERVER) + String("/math/derive?expr=") + urlEncode(String(expr));
+  // Use GPT with derivative prompt
+  String prompt = "Find the derivative of " + String(expr) + ". Give only the answer, no explanation.";
+  auto url = String(SERVER) + String("/gpt/ask?question=") + urlEncode(prompt);
 
   size_t realsize = 0;
   if (makeRequest(url, response, MAXHTTPRESPONSELEN, &realsize)) {
@@ -745,7 +747,9 @@ void integrate() {
   Serial.print("integrate: ");
   Serial.println(expr);
 
-  auto url = String(SERVER) + String("/math/integrate?expr=") + urlEncode(String(expr));
+  // Use GPT with integral prompt
+  String prompt = "Find the indefinite integral of " + String(expr) + ". Give only the answer with +C, no explanation.";
+  auto url = String(SERVER) + String("/gpt/ask?question=") + urlEncode(prompt);
 
   size_t realsize = 0;
   if (makeRequest(url, response, MAXHTTPRESPONSELEN, &realsize)) {
