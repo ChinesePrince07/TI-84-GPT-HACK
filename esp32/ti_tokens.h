@@ -100,12 +100,13 @@ const TokenEntry singleTokens[] = {
   { 0xBF, "e^" },
   { 0xC0, "log(" },
   { 0xC1, "10^" },
-  { 0xC2, "sin(" },
-  { 0xC3, "cos(" },
-  { 0xC4, "tan(" },
-  { 0xC5, "arcsin(" },
-  { 0xC6, "arccos(" },
-  { 0xC7, "arctan(" },
+  { 0xC2, "randInt(" },
+  { 0xC3, "randBin(" },
+  { 0xC4, "randNorm(" },
+
+  // Exponents
+  { 0x0D, "^2" },       // squared ²
+  { 0x0C, "^-1" },      // inverse ⁻¹
 
   // Calculus tokens
   { 0xF0, "nDeriv(" },   // numerical derivative
