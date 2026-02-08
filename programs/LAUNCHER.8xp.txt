@@ -44,10 +44,19 @@ Goto Q1
 
 Lbl W0:
 ClrHome
-Disp "BROADCASTING"
-Disp "WIFI PORTAL"
 15->C
 Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp "BROADCASTING"
+Disp "WIFI PORTAL"
+Disp " "
+Disp "CONNECT TO"
+Disp "WIFI: CALC"
 Pause
 Goto Q1
 
