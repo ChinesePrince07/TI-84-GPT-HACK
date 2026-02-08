@@ -20,10 +20,12 @@ The original concept came from ChromaLock, who made a [video about it](https://w
 
 - ChatGPT integration - ask questions directly from your calculator, with **loop mode** to keep asking without returning to menu
 - **Calculus solver** - derivatives and integrals via Newton API
+- **Utilities** - translate text, define words, and convert units
 - Wi-Fi connectivity via ESP32 with **captive portal configuration**
 - Program downloads over the air
 - Image display support (96x63 monochrome)
 - Chat functionality
+- **OTA updates** - update both ESP32 firmware and calculator program wirelessly
 - **Pre-configured server** - no need to run your own!
 
 ## How It Works
@@ -131,14 +133,16 @@ The GPT mode loops so you can have a continuous conversation without navigating 
 - Integral of `X^2` → `1/3 X^3 + C`
 - Derivative of `sin(X)` → `cos(X)`
 
-## OTA Firmware Updates
+## OTA Updates
 
-The ESP32 firmware can be updated over-the-air without re-flashing via USB:
+Both the ESP32 firmware and the calculator launcher program can be updated over-the-air:
 
 1. Go to **Settings → UPDATE** on your calculator
-2. The ESP32 will check the server for new firmware
-3. If available, it will download and install automatically
-4. The device will reboot with the new firmware
+2. The ESP32 checks the server for a new version
+3. If available, it downloads and flashes the new ESP32 firmware, then pushes the updated launcher to your calculator
+4. The ESP32 reboots with the new firmware
+
+To check your current version and the latest available, go to **Settings → VERSION**.
 
 
 ## Troubleshooting
@@ -153,7 +157,6 @@ The ESP32 firmware can be updated over-the-air without re-flashing via USB:
 - Multi-page GPT responses
 - Chat history
 - Basic web browsing
-- Weather integration
 - Camera support (ESP32-S3)
 
 ## Known Issues
