@@ -518,6 +518,16 @@ int onReceived(uint8_t type, enum Endpoint model, int datalen) {
         Serial.print("token len: ");
         Serial.println(tokenLen);
 
+        // Debug: print raw hex bytes
+        Serial.print("raw tokens: ");
+        for (int i = 0; i < tokenLen && i < 32; i++) {
+          Serial.print("0x");
+          if (data[2 + i] < 16) Serial.print("0");
+          Serial.print(data[2 + i], HEX);
+          Serial.print(" ");
+        }
+        Serial.println();
+
         // Decode the tokens to readable text
         decodeTokenString(data + 2, tokenLen, strArgs[currentArg], MAXSTRARGLEN);
         Serial.print("Str");
