@@ -1,8 +1,5 @@
 ClrHome
-0->S
-0->E
 " "->Str0
-" "->Str1
 
 Lbl M1
 ClrHome
@@ -20,10 +17,8 @@ Goto M1
 
 Lbl W0
 ClrHome
-Disp "STARTING SETUP..."
 15->C
 Send(C)
-ClrHome
 Disp "SETUP STARTED"
 Disp ""
 Disp "1.CONNECT TO WIFI"
@@ -37,31 +32,19 @@ Goto M1
 
 Lbl C0
 ClrHome
-Disp "CONNECTING..."
 0->C
 Send(C)
-0->S
-While S=0
-Get(S)
-End
-Get(Str1)
-ClrHome
-Disp Str1
+Disp "CONNECTING..."
+Disp ""
+Disp "PLEASE WAIT"
 Pause
 Goto M1
 
 Lbl D0
 ClrHome
-Disp "DISCONNECTING..."
 1->C
 Send(C)
-0->S
-While S=0
-Get(S)
-End
-Get(Str1)
-ClrHome
-Disp Str1
+Disp "DISCONNECTED"
 Pause
 Goto M1
 
@@ -76,14 +59,11 @@ Disp "THINKING..."
 Send(C)
 Send(Str0)
 0->S
-While S=0
+Repeat S
 Get(S)
 End
 Get(Str0)
 ClrHome
 Output(1,1,Str0)
-0->K
-While K=0
-getKey->K
-End
+Pause
 Goto G0
