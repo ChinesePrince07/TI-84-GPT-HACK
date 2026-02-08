@@ -719,7 +719,7 @@ void send() {
 }
 
 void _sendLauncher() {
-  sendProgramVariable("ANDYGPT", __launcher_var, __launcher_var_len);
+  sendProgramVariable("TI32", __launcher_var, __launcher_var_len);
 }
 
 void launcher() {

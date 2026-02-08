@@ -37,9 +37,24 @@ Lbl X0:
 Stop
 
 Lbl K0:
-Menu("SETTINGS","CONNECT",C0,"DISCONNECT",D0,"UPDATE",U0,"BACK",B0)
+Menu("SETTINGS","CONNECT",C0,"DISCONNECT",D0,"SETUP",W0,"UPDATE",U0,"BACK",B0)
 
 Lbl B0:
+Goto Q1
+
+Lbl W0:
+15->C
+Send(C)
+ClrHome
+Disp "WIFI SETUP"
+Disp ""
+Disp "1)CONNECT TO WIFI"
+Disp "  NAME: CALC"
+Disp ""
+Disp "2)OPEN BROWSER"
+Disp ""
+Disp "3)ENTER WIFI INFO"
+Pause
 Goto Q1
 
 
