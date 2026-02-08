@@ -717,7 +717,7 @@ void setup_wifi() {
 
   // Start the captive portal
   startCaptivePortal();
-  setSuccess("SETUP: connect to 'calc' WiFi");
+  setSuccess("OK");
 }
 
 void gpt() {

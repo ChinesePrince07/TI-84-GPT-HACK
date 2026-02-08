@@ -43,18 +43,15 @@ Lbl B0:
 Goto Q1
 
 Lbl W0:
-ClrHome
 15->C
 Send(C)
 0->S
 Repeat S
 Get(S)
 End
-Get(Str1)
 ClrHome
 Disp "BROADCASTING"
 Disp "WIFI PORTAL"
-Disp " "
 Disp "CONNECT TO"
 Disp "WIFI: CALC"
 Pause
@@ -247,14 +244,13 @@ Send(C)
 Repeat S
 Get(S)
 End
-Get(Str1)
 ClrHome
-Disp Str1
+Disp "UPDATE CHECK"
+Disp "COMPLETE"
 Pause
 Goto Q1
 
 Lbl V0:
-ClrHome
 21->C
 Send(C)
 0->S
@@ -263,6 +259,7 @@ Get(S)
 End
 Get(Str1)
 ClrHome
+Disp "VERSION:"
 Disp Str1
 Pause
 Goto Q1
