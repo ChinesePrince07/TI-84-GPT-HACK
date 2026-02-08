@@ -49,12 +49,13 @@ Send(C)
 Repeat S
 Get(S)
 End
+Get(Str1)
 ClrHome
 Disp "BROADCASTING"
 Disp "WIFI PORTAL"
 Disp "CONNECT TO"
 Disp "WIFI: CALC"
-Pause
+Pause Str1
 Goto Q1
 
 
@@ -168,32 +169,7 @@ End
 Goto M2
 
 Lbl Y0:
-Menu("UTILS","WEATHER",Y1,"TRANSLATE",Y2,"DEFINE",Y3,"UNITS",Y4,"BACK",B0)
-
-Lbl Y1:
-ClrHome
-22->C
-Disp "CITY:"
-Input "",Str0
-Send(C)
-Send(Str0)
-0->S
-Repeat S
-Get(S)
-End
-Get(Str0)
-ClrHome
-ClrDraw
-Output(1,1,Str0)
-Output(8,1,"CLEAR=EXIT")
-0->K
-Repeat K
-getKey->K
-End
-If K=45:Then
-Goto Y0
-End
-Goto Y1
+Menu("UTILS","TRANSLATE",Y2,"DEFINE",Y3,"UNITS",Y4,"BACK",B0)
 
 Lbl Y2:
 ClrHome
@@ -347,11 +323,12 @@ Send(C)
 Repeat S
 Get(S)
 End
+Get(Str1)
 ClrHome
-Disp "UPDATE CHECK"
-Disp "COMPLETE"
-Pause
-Goto Q1
+Disp Str1
+Disp "RERUN ANDYGPT"
+Disp "AFTER UPDATE"
+Stop
 
 Lbl V0:
 21->C
@@ -360,10 +337,11 @@ Send(C)
 Repeat S
 Get(S)
 End
+Get(Str1)
 ClrHome
 Disp "VERSION:"
-Disp "SEE SERIAL"
-Pause
+Disp Str1
+Pause Str1
 Goto Q1
 
 Lbl I0:

@@ -22,7 +22,7 @@
 #define SECURE
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.0.0"
+#define FIRMWARE_VERSION "1.0.2"
 
 // Captive portal settings
 #define AP_SSID "calc"
@@ -470,6 +470,7 @@ void setup() {
 }
 
 void (*queued_action)() = NULL;
+unsigned long queued_action_time = 0;
 
 void loop() {
   // Handle captive portal
@@ -478,14 +479,11 @@ void loop() {
     webServer.handleClient();
   }
 
-  if (queued_action) {
-    // dont ask me why you need this, but it fails otherwise.
-    // probably relates to a CBL2 timeout thing?
-    delay(1000);
+  if (queued_action && queued_action_time > 0 && millis() >= queued_action_time) {
     Serial.println("executing queued actions");
-    // dont ask me
     void (*tmp)() = queued_action;
     queued_action = NULL;
+    queued_action_time = 0;
     tmp();
   }
   if (command >= 0 && command <= MAXCOMMAND) {
@@ -934,43 +932,32 @@ void ota_update() {
   Serial.println("'");
 
   if (serverVersion == FIRMWARE_VERSION) {
-    Serial.println("Versions match, no update needed");
-    Serial.println("Sending updated launcher program...");
-    queued_action = _sendLauncher;
-    setSuccess("SENDING APP");
+    Serial.println("Already up to date");
+    setSuccess("UP TO DATE");
     return;
   }
 
-  // Download and flash new firmware
-  Serial.println("Versions differ, downloading firmware...");
-  String firmwareUrl = String(SERVER) + "/firmware/download";
+  // Download launcher from server
+  Serial.println("New version available, downloading launcher...");
+  String launcherUrl = String(SERVER) + "/firmware/launcher";
   Serial.print("Download URL: ");
-  Serial.println(firmwareUrl);
+  Serial.println(launcherUrl);
 
-  WiFiClientSecure client;
-  client.setInsecure();
-  client.setTimeout(30000);  // 30 second timeout
-
-  httpUpdate.rebootOnUpdate(false);  // Don't auto-reboot, we'll do it manually
-
-  t_httpUpdate_return ret = httpUpdate.update(client, firmwareUrl);
-
-  switch (ret) {
-    case HTTP_UPDATE_FAILED:
-      Serial.printf("Update failed (%d): %s\n", httpUpdate.getLastError(), httpUpdate.getLastErrorString().c_str());
-      setError("DL FAILED");
-      break;
-    case HTTP_UPDATE_NO_UPDATES:
-      Serial.println("No updates available");
-      setSuccess("NO UPDATE");
-      break;
-    case HTTP_UPDATE_OK:
-      Serial.println("Update OK! Rebooting in 2 seconds...");
-      setSuccess("REBOOTING");
-      delay(2000);
-      ESP.restart();
-      break;
+  _resetProgram();
+  if (makeRequest(launcherUrl, programData, 4096, &programLength)) {
+    Serial.println("Launcher download failed!");
+    setError("DL FAILED");
+    return;
   }
+
+  Serial.print("Downloaded launcher: ");
+  Serial.print(programLength);
+  Serial.println(" bytes");
+
+  strncpy(programName, "ANDYGPT", 256);
+  queued_action = _sendDownloadedProgram;
+  queued_action_time = millis() + 3000;
+  setSuccess("UPDATING...");
 }
 
 void send() {
@@ -992,6 +979,7 @@ void launcher() {
   // we have to queue this action, since otherwise the transfer fails
   // due to the CBL2 library still using the lines
   queued_action = _sendLauncher;
+  queued_action_time = millis() + 2000;
   setSuccess("queued transfer");
 }
 
@@ -1156,6 +1144,7 @@ void fetch_program() {
   }
 
   queued_action = _sendDownloadedProgram;
+  queued_action_time = millis() + 2000;
 
   setSuccess("queued download");
 }
