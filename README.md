@@ -18,7 +18,7 @@ The original concept came from ChromaLock, who made a [video about it](https://w
 
 ## Features
 
-- ChatGPT integration - ask questions directly from your calculator
+- ChatGPT integration - ask questions directly from your calculator, with **loop mode** to keep asking without returning to menu
 - Wi-Fi connectivity via ESP32 with **captive portal configuration**
 - Program downloads over the air
 - Image display support (96x63 monochrome)
@@ -57,17 +57,18 @@ Order the PCB from `/pcb/0.1/`, solder the components, wire TIP/RING/5V/GND to y
 4. No configuration files needed!
 
 ### 2. WiFi Configuration (Captive Portal)
-1. Power on your calculator
-2. Connect to the WiFi network named **"calc"** from your phone/computer
-3. A captive portal will automatically open (or navigate to `192.168.4.1`)
-4. Enter your WiFi name and password
-5. Click "Save & Connect"
-6. The ESP32 will connect to your network and remember the settings
+1. Power on your calculator and run the **ANDYGPT** program
+2. Go to **Settings → SETUP** to broadcast the captive portal
+3. On your phone/computer, connect to the WiFi network named **"calc"**
+4. A captive portal will automatically open (or navigate to `192.168.4.1`)
+5. Enter your WiFi name and password
+6. Click "Save & Connect"
+7. The ESP32 will remember the settings for next time
 
 The server is pre-configured to use my hosted instance - no need to run your own!
 
 ### 3. Calculator Setup
-Transfer the LAUNCHER program to your calculator using the TI-84 menu (Settings → Update).
+Transfer the **ANDYGPT** program to your calculator using Settings → Update in the launcher, or by connecting via USB.
 
 ## Running Your Own Server (Optional)
 
@@ -99,7 +100,7 @@ By default, the ESP32 connects to my hosted server. If you want to run your own:
 ## Reconfiguring WiFi
 
 If you need to change WiFi settings:
-- The captive portal is available for a few seconds on every boot
+- Go to **Settings → SETUP** in the ANDYGPT program to broadcast the captive portal
 - Or erase ESP32 flash and re-upload the firmware
 
 ## Commands
@@ -116,6 +117,16 @@ If you need to change WiFi settings:
 | 12 | send_chat | Send chat message |
 | 13 | program_list | List available programs |
 | 14 | fetch_program | Download program |
+| 15 | setup_wifi | Broadcast captive portal for WiFi config |
+
+## Using GPT
+
+1. From the main menu, select **GPT**
+2. Type your question and press ENTER
+3. Wait for the response to appear
+4. Press **any key** to ask another question, or **CLEAR** to return to the menu
+
+The GPT mode loops so you can have a continuous conversation without navigating back to the menu each time.
 
 ## Troubleshooting
 
