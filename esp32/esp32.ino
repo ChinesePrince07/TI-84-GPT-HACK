@@ -586,6 +586,8 @@ int onRequest(uint8_t type, enum Endpoint model, int* headerlen, int* datalen, d
       if (type != VarTypes82::VarReal) {
         return -1;
       }
+      Serial.print("sending S=");
+      Serial.println(status);
       *datalen = TIVar::longToReal8x(status, data, model);
       TIVar::intToSizeWord(*datalen, header);
       header[2] = VarTypes82::VarReal;
