@@ -108,6 +108,7 @@ void weather();
 void translate();
 void define();
 void units();
+void _sendLauncher();
 
 struct Command {
   int id;
