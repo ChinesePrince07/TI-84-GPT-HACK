@@ -810,7 +810,6 @@ void ota_update() {
 
   String firmwareUrl = String(SERVER) + "/firmware/download";
 
-  httpUpdate.setLedPin(LED_BUILTIN, LOW);
   t_httpUpdate_return ret = httpUpdate.update(client, firmwareUrl);
 
   switch (ret) {
