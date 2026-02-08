@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AP Physics C: RC Circuit Problem</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            padding: 40px;
+            color: #fff;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            color: #00d4ff;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 40px;
+            font-size: 1.2em;
+        }
+        .problem-box {
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #00d4ff;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        .problem-box h2 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .circuit-diagram {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .problem-text {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin: 20px 0;
+        }
+        .values {
+            background: rgba(0, 212, 255, 0.1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .values p { margin: 8px 0; }
+        .parts { margin-top: 25px; }
+        .parts h3 {
+            color: #ffd700;
+            margin: 20px 0 10px 0;
+        }
+        .parts p {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        .equation-box {
+            background: rgba(255,255,255,0.08);
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            font-size: 1.3em;
+        }
+        .context-box {
+            background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(255,165,0,0.1));
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+        }
+        .context-box h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+        }
+        .context-box p { line-height: 1.7; }
+        .hint {
+            color: #aaa;
+            font-style: italic;
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+        .solution {
+            background: linear-gradient(135deg, rgba(39, 174, 96, 0.15), rgba(46, 204, 113, 0.1));
+            border: 2px solid #27ae60;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0 30px 20px;
+        }
+        .solution h4 {
+            color: #27ae60;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+        .solution p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+        .solution strong {
+            color: #2ecc71;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>RC Circuit Problem</h1>
+        <p class="subtitle">AP Physics C: Electricity & Magnetism</p>
+
+        <div class="problem-box">
+            <h2>Problem: MOSFET Level Shifter Timing</h2>
+
+            <div class="circuit-diagram">
+                <svg width="600" height="380" viewBox="0 0 600 380">
+                    <rect width="600" height="380" fill="#fff"/>
+
+                    <!-- 3.3V Supply -->
+                    <line x1="300" y1="30" x2="300" y2="50" stroke="#e74c3c" stroke-width="3"/>
+                    <text x="300" y="22" text-anchor="middle" font-family="Arial" font-size="18" font-weight="bold" fill="#e74c3c">+3.3V</text>
+
+                    <!-- Pull-up Resistor R -->
+                    <line x1="300" y1="50" x2="300" y2="70" stroke="#333" stroke-width="2"/>
+                    <!-- Resistor zig-zag -->
+                    <polyline points="300,70 310,78 290,94 310,110 290,126 310,142 300,150"
+                              fill="none" stroke="#333" stroke-width="2"/>
+                    <text x="330" y="115" font-family="Arial" font-size="16" font-weight="bold" fill="#e65100">R = 1kΩ</text>
+
+                    <!-- Node point -->
+                    <line x1="300" y1="150" x2="300" y2="180" stroke="#333" stroke-width="2"/>
+                    <circle cx="300" cy="180" r="6" fill="#333"/>
+
+                    <!-- Wire to output (right) -->
+                    <line x1="300" y1="180" x2="480" y2="180" stroke="#333" stroke-width="2"/>
+
+                    <!-- Capacitor C -->
+                    <line x1="480" y1="180" x2="480" y2="210" stroke="#333" stroke-width="2"/>
+                    <line x1="460" y1="210" x2="500" y2="210" stroke="#333" stroke-width="3"/>
+                    <line x1="460" y1="225" x2="500" y2="225" stroke="#333" stroke-width="3"/>
+                    <line x1="480" y1="225" x2="480" y2="260" stroke="#333" stroke-width="2"/>
+                    <text x="515" y="222" font-family="Arial" font-size="16" font-weight="bold" fill="#1976d2">C = 15pF</text>
+
+                    <!-- Ground for capacitor -->
+                    <line x1="465" y1="260" x2="495" y2="260" stroke="#333" stroke-width="2"/>
+                    <line x1="470" y1="268" x2="490" y2="268" stroke="#333" stroke-width="2"/>
+                    <line x1="475" y1="276" x2="485" y2="276" stroke="#333" stroke-width="2"/>
+
+                    <!-- Output label -->
+                    <rect x="400" y="155" width="70" height="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+                    <text x="435" y="173" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="#388e3c">TI-84</text>
+
+                    <!-- MOSFET -->
+                    <line x1="300" y1="180" x2="300" y2="220" stroke="#333" stroke-width="2"/>
+                    <!-- Drain -->
+                    <line x1="300" y1="220" x2="250" y2="220" stroke="#333" stroke-width="2"/>
+                    <!-- Gate vertical bar -->
+                    <line x1="250" y1="205" x2="250" y2="275" stroke="#333" stroke-width="3"/>
+                    <!-- Channel -->
+                    <line x1="260" y1="215" x2="260" y2="265" stroke="#333" stroke-width="2"/>
+                    <!-- Drain connection -->
+                    <line x1="260" y1="220" x2="300" y2="220" stroke="#333" stroke-width="2"/>
+                    <!-- Source connection -->
+                    <line x1="260" y1="260" x2="300" y2="260" stroke="#333" stroke-width="2"/>
+                    <!-- Arrow -->
+                    <polygon points="270,260 280,255 280,265" fill="#333"/>
+                    <!-- Body diode line -->
+                    <line x1="260" y1="240" x2="300" y2="240" stroke="#333" stroke-width="2"/>
+
+                    <!-- MOSFET label -->
+                    <text x="200" y="245" text-anchor="end" font-family="Arial" font-size="14" font-weight="bold" fill="#9c27b0">Q</text>
+                    <text x="200" y="265" text-anchor="end" font-family="Arial" font-size="12" fill="#9c27b0">MMBF170</text>
+
+                    <!-- Source to ground -->
+                    <line x1="300" y1="260" x2="300" y2="310" stroke="#333" stroke-width="2"/>
+                    <line x1="285" y1="310" x2="315" y2="310" stroke="#333" stroke-width="2"/>
+                    <line x1="290" y1="318" x2="310" y2="318" stroke="#333" stroke-width="2"/>
+                    <line x1="295" y1="326" x2="305" y2="326" stroke="#333" stroke-width="2"/>
+
+                    <!-- Gate input from left -->
+                    <line x1="250" y1="240" x2="200" y2="240" stroke="#333" stroke-width="2"/>
+                    <line x1="100" y1="240" x2="200" y2="240" stroke="#333" stroke-width="2"/>
+
+                    <!-- ESP32 box -->
+                    <rect x="30" y="210" width="70" height="60" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+                    <text x="65" y="235" text-anchor="middle" font-family="Arial" font-size="12" font-weight="bold" fill="#1976d2">ESP32</text>
+                    <text x="65" y="255" text-anchor="middle" font-family="Arial" font-size="11" fill="#1976d2">GPIO</text>
+
+                    <!-- Labels -->
+                    <text x="150" y="230" text-anchor="middle" font-family="Arial" font-size="13" fill="#666">Gate</text>
+                    <text x="300" y="200" text-anchor="middle" font-family="Arial" font-size="13" fill="#666">Drain</text>
+                    <text x="320" y="275" font-family="Arial" font-size="13" fill="#666">Source</text>
+
+                    <!-- Voltage annotation -->
+                    <line x1="380" y1="175" x2="380" y2="265" stroke="#27ae60" stroke-width="1" stroke-dasharray="5,3"/>
+                    <text x="385" y="225" font-family="Arial" font-size="14" font-weight="bold" fill="#27ae60">V(t)</text>
+                </svg>
+            </div>
+
+            <p class="problem-text">
+                A level shifter circuit allows a 3.3V ESP32 microcontroller to communicate with a TI-84 calculator.
+                When the MOSFET is OFF, the capacitor charges through resistor R. Analyze this RC charging behavior.
+            </p>
+
+            <div class="values">
+                <p><strong>Given:</strong></p>
+                <p>$V_{DD} = 3.3$ V &nbsp;&nbsp;|&nbsp;&nbsp; $R = 1.0$ kΩ &nbsp;&nbsp;|&nbsp;&nbsp; $C = 15$ pF</p>
+            </div>
+
+            <div class="parts">
+                <h3>(a) Time Constant — 3 pts</h3>
+                <p>Calculate the time constant $\tau$ of this RC circuit.</p>
+                <div class="equation-box">
+                    $$\tau = RC$$
+                </div>
+
+                <div class="solution">
+                    <h4>Solution:</h4>
+                    $$\tau = RC = (1.0 \times 10^3 \, \Omega)(15 \times 10^{-12} \, \text{F})$$
+                    $$\tau = 15 \times 10^{-9} \, \text{s} = \boxed{15 \, \text{ns}}$$
+                </div>
+
+                <h3>(b) Voltage Derivation — 6 pts</h3>
+                <p>Starting from Kirchhoff's voltage law, derive the voltage across the capacitor as a function of time when charging from $V = 0$.</p>
+                <div class="equation-box">
+                    $$V_{DD} = V_R + V_C = IR + \frac{Q}{C}$$
+                </div>
+                <p class="hint">Hint: Use $I = \frac{dQ}{dt}$ and $Q = CV_C$ to get a differential equation in $V_C$</p>
+
+                <div class="solution">
+                    <h4>Solution:</h4>
+                    <p><strong>Step 1:</strong> Apply Kirchhoff's Voltage Law around the loop:</p>
+                    $$V_{DD} = V_R + V_C = IR + V_C$$
+
+                    <p><strong>Step 2:</strong> Express current in terms of capacitor voltage. Since $Q = CV_C$:</p>
+                    $$I = \frac{dQ}{dt} = C\frac{dV_C}{dt}$$
+
+                    <p><strong>Step 3:</strong> Substitute into KVL equation:</p>
+                    $$V_{DD} = RC\frac{dV_C}{dt} + V_C$$
+
+                    <p><strong>Step 4:</strong> Rearrange into standard form:</p>
+                    $$\frac{dV_C}{dt} + \frac{V_C}{RC} = \frac{V_{DD}}{RC}$$
+
+                    <p><strong>Step 5:</strong> Solve the first-order linear ODE. The homogeneous solution is $V_h = Ae^{-t/RC}$ and particular solution is $V_p = V_{DD}$:</p>
+                    $$V_C(t) = V_{DD} + Ae^{-t/RC}$$
+
+                    <p><strong>Step 6:</strong> Apply initial condition $V_C(0) = 0$:</p>
+                    $$0 = V_{DD} + A \implies A = -V_{DD}$$
+
+                    <p><strong>Final Answer:</strong></p>
+                    $$\boxed{V_C(t) = V_{DD}\left(1 - e^{-t/\tau}\right)}$$
+                    <p>where $\tau = RC$</p>
+                </div>
+
+                <h3>(c) Rise Time — 4 pts</h3>
+                <p>Calculate the rise time $t_r$ (time for voltage to go from $0.1V_{DD}$ to $0.9V_{DD}$).</p>
+                <div class="equation-box">
+                    $$t_r = \tau \ln(9) \approx 2.2\tau$$
+                </div>
+
+                <div class="solution">
+                    <h4>Solution:</h4>
+                    <p><strong>Step 1:</strong> Find time $t_1$ when $V_C = 0.1V_{DD}$:</p>
+                    $$0.1V_{DD} = V_{DD}(1 - e^{-t_1/\tau})$$
+                    $$0.1 = 1 - e^{-t_1/\tau}$$
+                    $$e^{-t_1/\tau} = 0.9$$
+                    $$t_1 = -\tau \ln(0.9) = \tau \ln(1.111)$$
+
+                    <p><strong>Step 2:</strong> Find time $t_2$ when $V_C = 0.9V_{DD}$:</p>
+                    $$0.9V_{DD} = V_{DD}(1 - e^{-t_2/\tau})$$
+                    $$e^{-t_2/\tau} = 0.1$$
+                    $$t_2 = -\tau \ln(0.1) = \tau \ln(10)$$
+
+                    <p><strong>Step 3:</strong> Calculate rise time:</p>
+                    $$t_r = t_2 - t_1 = \tau \ln(10) - \tau \ln(1.111)$$
+                    $$t_r = \tau \ln\left(\frac{10}{1.111}\right) = \tau \ln(9)$$
+                    $$t_r = \tau \times 2.197 \approx 2.2\tau$$
+
+                    <p><strong>Numerical value:</strong></p>
+                    $$t_r = 2.2 \times 15 \, \text{ns} = \boxed{33 \, \text{ns}}$$
+                </div>
+
+                <h3>(d) Maximum Bit Rate — 5 pts</h3>
+                <p>If each bit requires a complete charge/discharge cycle and must reach 90% of final value, find the maximum bit rate in bits per second.</p>
+                <div class="equation-box">
+                    $$f_{max} = \frac{1}{2 \cdot t_{90\%}} = \frac{1}{2 \cdot 2.3\tau}$$
+                </div>
+
+                <div class="solution">
+                    <h4>Solution:</h4>
+                    <p><strong>Step 1:</strong> Time to reach 90% of final value (from 0):</p>
+                    $$0.9 = 1 - e^{-t/\tau}$$
+                    $$e^{-t/\tau} = 0.1$$
+                    $$t_{90\%} = \tau \ln(10) = 2.303\tau$$
+
+                    <p><strong>Step 2:</strong> Each bit needs both charging AND discharging:</p>
+                    $$T_{bit} = t_{charge} + t_{discharge} = 2 \times t_{90\%} = 2 \times 2.303\tau$$
+                    $$T_{bit} = 4.606\tau$$
+
+                    <p><strong>Step 3:</strong> Maximum bit rate:</p>
+                    $$f_{max} = \frac{1}{T_{bit}} = \frac{1}{4.606\tau}$$
+                    $$f_{max} = \frac{1}{4.606 \times 15 \times 10^{-9}}$$
+                    $$f_{max} = \frac{1}{69.1 \times 10^{-9}}$$
+                    $$f_{max} = \boxed{14.5 \, \text{MHz}}$$
+
+                    <p><em>Note: The TI-84 link protocol operates at ~10 kHz, well below this limit!</em></p>
+                </div>
+
+                <h3>(e) Power Dissipation — 2 pts</h3>
+                <p>When the MOSFET is ON (acts as short circuit), what is the power dissipated in resistor R?</p>
+                <div class="equation-box">
+                    $$P = \frac{V_{DD}^2}{R}$$
+                </div>
+
+                <div class="solution">
+                    <h4>Solution:</h4>
+                    <p>When MOSFET is ON, it connects the resistor directly to ground:</p>
+                    $$P = \frac{V_{DD}^2}{R} = \frac{(3.3)^2}{1000}$$
+                    $$P = \frac{10.89}{1000} = \boxed{10.9 \, \text{mW}}$$
+
+                    <p><em>This is why 1kΩ was chosen — smaller R means faster switching but more power consumption. Larger R saves power but slows down signals.</em></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="context-box">
+            <h2>Real-World Application: TI-84 GPT Hack</h2>
+            <p>
+                This circuit is from a project that adds WiFi and ChatGPT to a TI-84 calculator.
+                The ESP32 microcontroller communicates using a timing-sensitive protocol — if $\tau$ is too large,
+                bits get corrupted. The 1kΩ resistor balances speed vs. power consumption.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

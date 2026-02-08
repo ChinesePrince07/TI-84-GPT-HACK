@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transistors & MOSFETs - AP Physics C</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Space+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: auto; scroll-snap-type: y mandatory; scroll-snap-stop: always; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .bg-animation {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: linear-gradient(125deg, #0a0014 0%, #1a0033 25%, #000428 50%, #0a0014 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 20s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .field-lines {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            opacity: 0.15;
+        }
+
+        .field-line {
+            position: absolute;
+            width: 2px;
+            height: 100px;
+            background: linear-gradient(to bottom, transparent, #00d4ff, transparent);
+            animation: fieldFlow 3s linear infinite;
+        }
+
+        @keyframes fieldFlow {
+            0% { transform: translateY(-100px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background-image:
+                linear-gradient(rgba(138, 43, 226, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(138, 43, 226, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #8a2be2, #00d4ff, #00ff88);
+            z-index: 1000;
+            transition: width 0.3s;
+        }
+
+        .slide {
+            min-height: 100vh;
+            padding: 60px 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            scroll-snap-align: start;
+            overflow: hidden;
+        }
+
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(ellipse at center, transparent 0%, rgba(0,0,0,0.6) 100%);
+            pointer-events: none;
+        }
+
+        .slide > * { position: relative; z-index: 1; }
+
+        h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3.5em;
+            font-weight: 900;
+            margin-bottom: 30px;
+            background: linear-gradient(90deg, #8a2be2, #00d4ff, #00ff88, #8a2be2);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shine 4s linear infinite;
+            filter: drop-shadow(0 0 30px rgba(138, 43, 226, 0.5));
+        }
+
+        @keyframes shine {
+            0% { background-position: 0% center; }
+            100% { background-position: 300% center; }
+        }
+
+        h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2em;
+            color: #00d4ff;
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+        }
+
+        h3 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.5em;
+            color: #00ff88;
+            margin: 20px 0 15px;
+            text-shadow: 0 0 15px rgba(0, 255, 136, 0.4);
+        }
+
+        p, li { font-size: 1.4em; line-height: 1.8; font-weight: 400; }
+
+        ul { list-style: none; padding-left: 0; }
+
+        li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        li::before {
+            content: '⚡';
+            position: absolute;
+            left: 0;
+            color: #8a2be2;
+        }
+
+        .glass-box {
+            background: rgba(138, 43, 226, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(138, 43, 226, 0.2);
+        }
+
+        .equation-box {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(0, 212, 255, 0.1));
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 25px 0;
+            text-align: center;
+            font-size: 1.4em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .equation-box::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(138, 43, 226, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+
+        .stat-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 30px 0;
+        }
+
+        .stat { text-align: center; padding: 30px; }
+
+        .stat-number {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 4em;
+            font-weight: 900;
+            background: linear-gradient(180deg, #8a2be2, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.5));
+        }
+
+        .stat-label { font-size: 1.2em; color: #aaa; margin-top: 10px; }
+
+        .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 50px;
+            align-items: center;
+        }
+
+        .project-img {
+            max-width: 100%;
+            border-radius: 15px;
+            border: 2px solid rgba(138, 43, 226, 0.5);
+            box-shadow: 0 0 40px rgba(138, 43, 226, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .project-img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 60px rgba(138, 43, 226, 0.5);
+        }
+
+        .flow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+
+        .flow-node {
+            background: linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(0, 212, 255, 0.2));
+            border: 2px solid #8a2be2;
+            border-radius: 15px;
+            padding: 25px 35px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1em;
+            text-align: center;
+            animation: nodePulse 2s ease-in-out infinite;
+        }
+
+        .flow-node:nth-child(odd) { animation-delay: 0.5s; }
+
+        @keyframes nodePulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.3); }
+            50% { box-shadow: 0 0 40px rgba(138, 43, 226, 0.6); }
+        }
+
+        .flow-arrow {
+            font-size: 2em;
+            color: #00d4ff;
+            animation: arrowPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes arrowPulse {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(5px); }
+        }
+
+        .title-slide h1 { font-size: 4.5em; text-align: center; }
+        .title-slide .subtitle {
+            font-size: 2em;
+            text-align: center;
+            color: #00d4ff;
+            margin-bottom: 50px;
+        }
+        .title-slide .author {
+            font-size: 1.5em;
+            text-align: center;
+            color: #888;
+            margin-top: 60px;
+        }
+
+        .slide-number {
+            position: absolute;
+            top: 30px;
+            right: 50px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 3em;
+            font-weight: 900;
+            color: rgba(138, 43, 226, 0.7);
+            text-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 212, 255, 0.1));
+            border-left: 4px solid #00ff88;
+            padding: 20px 30px;
+            margin: 20px 0;
+            border-radius: 0 15px 15px 0;
+        }
+
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+        }
+        th {
+            background: rgba(138, 43, 226, 0.2);
+            font-family: 'Orbitron', sans-serif;
+            color: #00d4ff;
+        }
+        tr:hover { background: rgba(138, 43, 226, 0.1); }
+
+        .compare-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .compare-box {
+            background: rgba(138, 43, 226, 0.1);
+            border-radius: 15px;
+            padding: 30px;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .compare-box.highlight {
+            border-color: #00ff88;
+            box-shadow: 0 0 30px rgba(0, 255, 136, 0.2);
+        }
+
+        .compare-box h3 { text-align: center; margin-bottom: 20px; }
+
+        .center { text-align: center; }
+
+        .problem-box {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(138, 43, 226, 0.1));
+            border: 2px solid #ffa500;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .problem-box h3 { color: #ffa500; }
+
+        .solution-box {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.1), rgba(0, 212, 255, 0.1));
+            border: 2px solid #00ff88;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .small-text { font-size: 0.9em; }
+
+        .mosfet-svg { filter: drop-shadow(0 0 20px rgba(138, 43, 226, 0.5)); }
+
+        .timeline {
+            position: relative;
+            padding-left: 40px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 10px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #8a2be2, #00d4ff);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -34px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #00ff88;
+            box-shadow: 0 0 10px #00ff88;
+        }
+
+        .timeline-year {
+            font-family: 'Orbitron', sans-serif;
+            color: #8a2be2;
+            font-size: 1.2em;
+        }
+
+        .circuit-diagram {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-animation"></div>
+    <div class="grid-overlay"></div>
+    <div class="field-lines" id="fieldLines"></div>
+    <div class="progress-bar" id="progressBar"></div>
+
+    <!-- Slide 1: Title -->
+    <section class="slide title-slide">
+        <h1>TRANSISTORS</h1>
+        <p class="subtitle">The Switch That Built the Modern World</p>
+        <div class="stat-container">
+            <div class="stat">
+                <div class="stat-number">1947</div>
+                <div class="stat-label">Invented at Bell Labs</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">10²²</div>
+                <div class="stat-label">Made per year</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">#1</div>
+                <div class="stat-label">Most manufactured object ever</div>
+            </div>
+        </div>
+        <p class="author">AP Physics C: Electricity & Magnetism</p>
+        <span class="slide-number">1</span>
+    </section>
+
+    <!-- Slide 2: What is a Transistor -->
+    <section class="slide">
+        <h1>What is a Transistor?</h1>
+        <div class="glass-box center">
+            <p style="font-size: 1.8em;">A transistor is an <strong>electrically controlled switch</strong></p>
+            <p style="font-size: 1.4em; color: #00d4ff; margin-top: 20px;">A small signal controls a larger current — no moving parts</p>
+        </div>
+        <div class="compare-container">
+            <div class="compare-box">
+                <h3>Mechanical Switch</h3>
+                <ul>
+                    <li>Physical contact opens/closes</li>
+                    <li>Slow (milliseconds)</li>
+                    <li>Wears out over time</li>
+                    <li>Large, bulky</li>
+                </ul>
+            </div>
+            <div class="compare-box highlight">
+                <h3>Transistor Switch</h3>
+                <ul>
+                    <li>Electric field controls current</li>
+                    <li>Fast (nanoseconds)</li>
+                    <li>No wear, solid state</li>
+                    <li>Nanometer scale</li>
+                </ul>
+            </div>
+        </div>
+        <span class="slide-number">2</span>
+    </section>
+
+    <!-- Slide 3: Two Types -->
+    <section class="slide">
+        <h1>Two Main Types</h1>
+        <div class="compare-container">
+            <div class="compare-box">
+                <h3>BJT</h3>
+                <p class="center" style="font-size: 1.1em;">Bipolar Junction Transistor</p>
+                <ul>
+                    <li><strong>Current-controlled</strong></li>
+                    <li>Base current controls collector current</li>
+                    <li>$I_C = \beta \cdot I_B$</li>
+                    <li>Higher power consumption</li>
+                    <li>Used in: amplifiers, analog</li>
+                </ul>
+            </div>
+            <div class="compare-box highlight">
+                <h3>MOSFET</h3>
+                <p class="center" style="font-size: 1.1em;">Metal-Oxide-Semiconductor FET</p>
+                <ul>
+                    <li><strong>Voltage-controlled</strong></li>
+                    <li>Gate voltage controls drain current</li>
+                    <li>$V_{GS} > V_{th} \Rightarrow$ ON</li>
+                    <li>Extremely low power</li>
+                    <li>Used in: CPUs, digital circuits</li>
+                </ul>
+            </div>
+        </div>
+        <div class="highlight-box center">
+            <p><strong>99%+ of transistors made today are MOSFETs</strong></p>
+        </div>
+        <span class="slide-number">3</span>
+    </section>
+
+    <!-- Slide 4: Why MOSFETs Won -->
+    <section class="slide">
+        <h1>Why MOSFETs Dominate</h1>
+        <div class="glass-box">
+            <h3>The Key Advantage: Gate Draws No DC Current</h3>
+            <div class="two-col" style="margin-top: 20px;">
+                <div>
+                    <p><strong>BJT:</strong></p>
+                    <ul>
+                        <li>Base needs continuous current</li>
+                        <li>Power = $I_B \cdot V_{BE}$ always</li>
+                        <li>Heat builds up at scale</li>
+                    </ul>
+                </div>
+                <div>
+                    <p><strong>MOSFET:</strong></p>
+                    <ul>
+                        <li>Gate is insulated (SiO₂)</li>
+                        <li>No DC current into gate</li>
+                        <li>Only power during switching</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="equation-box">
+            $$P_{static} \approx 0 \text{ (ideal MOSFET)}$$
+        </div>
+        <div class="highlight-box center">
+            <p>This is why your phone has 10 billion transistors and doesn't melt</p>
+        </div>
+        <span class="slide-number">4</span>
+    </section>
+
+    <!-- Slide 5: AP Problem Circuit -->
+    <section class="slide">
+        <h1>AP Problem: The Circuit</h1>
+        <div class="two-col">
+            <div class="circuit-diagram">
+                <svg width="400" height="380" class="mosfet-svg">
+                    <!-- VDD rail -->
+                    <line x1="50" y1="30" x2="350" y2="30" stroke="#ff4444" stroke-width="3"/>
+                    <text x="200" y="20" text-anchor="middle" fill="#ff4444" font-size="18" font-weight="bold">V_DD = 5V</text>
+
+                    <!-- Load resistor RL -->
+                    <line x1="280" y1="30" x2="280" y2="50" stroke="#00d4ff" stroke-width="2"/>
+                    <rect x="268" y="50" width="24" height="70" fill="none" stroke="#ffa500" stroke-width="3"/>
+                    <text x="310" y="90" fill="#ffa500" font-size="16" font-weight="bold">R_L</text>
+                    <text x="310" y="110" fill="#ffa500" font-size="14">1kΩ</text>
+                    <line x1="280" y1="120" x2="280" y2="150" stroke="#00d4ff" stroke-width="2"/>
+
+                    <!-- MOSFET -->
+                    <g transform="translate(200, 150)">
+                        <!-- Drain -->
+                        <line x1="80" y1="0" x2="80" y2="30" stroke="#00d4ff" stroke-width="3"/>
+                        <!-- Body -->
+                        <rect x="55" y="30" width="50" height="60" fill="none" stroke="#8a2be2" stroke-width="2"/>
+                        <text x="80" y="65" text-anchor="middle" fill="#8a2be2" font-size="14" font-weight="bold">M1</text>
+                        <!-- Source -->
+                        <line x1="80" y1="90" x2="80" y2="120" stroke="#00d4ff" stroke-width="3"/>
+                        <!-- Gate -->
+                        <line x1="55" y1="60" x2="20" y2="60" stroke="#8a2be2" stroke-width="3"/>
+                        <circle cx="20" cy="60" r="5" fill="#8a2be2"/>
+                        <text x="10" y="45" fill="#8a2be2" font-size="14" font-weight="bold">G</text>
+                        <!-- D and S labels -->
+                        <text x="95" y="20" fill="#00d4ff" font-size="12">D</text>
+                        <text x="95" y="110" fill="#00d4ff" font-size="12">S</text>
+                    </g>
+
+                    <!-- Gate drive circuit -->
+                    <line x1="100" y1="30" x2="100" y2="50" stroke="#00d4ff" stroke-width="2"/>
+                    <text x="85" y="45" fill="#00d4ff" font-size="12">5V</text>
+                    <!-- RG resistor -->
+                    <rect x="88" y="50" width="24" height="70" fill="none" stroke="#ffa500" stroke-width="3"/>
+                    <text x="60" y="90" fill="#ffa500" font-size="16" font-weight="bold">R_G</text>
+                    <text x="55" y="110" fill="#ffa500" font-size="14">10kΩ</text>
+                    <line x1="100" y1="120" x2="100" y2="210" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="100" y1="210" x2="220" y2="210" stroke="#00d4ff" stroke-width="2"/>
+
+                    <!-- Gate capacitor (shown as capacitor symbol) -->
+                    <line x1="160" y1="195" x2="160" y2="205" stroke="#00ff88" stroke-width="2"/>
+                    <line x1="150" y1="205" x2="170" y2="205" stroke="#00ff88" stroke-width="3"/>
+                    <line x1="150" y1="212" x2="170" y2="212" stroke="#00ff88" stroke-width="3"/>
+                    <line x1="160" y1="212" x2="160" y2="225" stroke="#00ff88" stroke-width="2"/>
+                    <text x="175" y="212" fill="#00ff88" font-size="14">C_G = 50pF</text>
+
+                    <!-- Ground connections -->
+                    <line x1="280" y1="270" x2="280" y2="320" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="160" y1="225" x2="160" y2="320" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="100" y1="320" x2="320" y2="320" stroke="#888" stroke-width="3"/>
+                    <!-- Ground symbol -->
+                    <line x1="180" y1="330" x2="240" y2="330" stroke="#888" stroke-width="2"/>
+                    <line x1="190" y1="338" x2="230" y2="338" stroke="#888" stroke-width="2"/>
+                    <line x1="200" y1="346" x2="220" y2="346" stroke="#888" stroke-width="1"/>
+                    <text x="250" y="340" fill="#888" font-size="14">GND</text>
+
+                    <!-- Output label -->
+                    <circle cx="280" cy="150" r="5" fill="#00ff88"/>
+                    <text x="300" y="155" fill="#00ff88" font-size="14" font-weight="bold">V_out</text>
+                </svg>
+            </div>
+            <div>
+                <div class="glass-box" style="padding: 25px;">
+                    <h3>Circuit Components:</h3>
+                    <ul class="small-text">
+                        <li>$V_{DD} = 5.0$ V supply</li>
+                        <li>$R_L = 1.0$ kΩ load resistor</li>
+                        <li>$R_G = 10$ kΩ gate resistor</li>
+                        <li>$C_G = 50$ pF gate capacitance</li>
+                        <li>MOSFET: $V_{th} = 1.5$ V, $R_{DS} = 5\Omega$</li>
+                        <li>Gate oxide: $t_{ox} = 50$ nm</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p class="small-text"><strong>When gate is LOW:</strong> MOSFET OFF, no current</p>
+                    <p class="small-text"><strong>When gate is HIGH:</strong> MOSFET ON, current flows through $R_L$</p>
+                </div>
+            </div>
+        </div>
+        <span class="slide-number">5</span>
+    </section>
+
+    <!-- Slide 6: AP Problem Questions -->
+    <section class="slide">
+        <h1>AP Free Response Problem</h1>
+        <div class="problem-box">
+            <h3>Transistor Switching Circuit Analysis</h3>
+            <p>Using the circuit shown, where the MOSFET acts as a switch (ON: $R_{DS} = 5\Omega$, OFF: open):</p>
+            <p style="margin-top: 20px;"><strong>(a)</strong> When ON, calculate the current through $R_L$ and the power dissipated in the load. (3 pts)</p>
+            <p><strong>(b)</strong> Calculate the time constant for charging the gate capacitor $C_G$ through $R_G$. (2 pts)</p>
+            <p><strong>(c)</strong> Starting from 0V, how long after applying 5V to the input does the MOSFET turn ON? (3 pts)</p>
+            <p><strong>(d)</strong> Calculate the electric field magnitude in the gate oxide when $V_{GS} = 5.0$ V. (2 pts)</p>
+            <p><strong>(e)</strong> If the MOSFET switches at 1 MHz and the gate fully charges each cycle, find the average power consumed charging the gate capacitor. (3 pts)</p>
+        </div>
+        <span class="slide-number">6</span>
+    </section>
+
+    <!-- Slide 7: Solution a, b -->
+    <section class="slide">
+        <h1>Solution (a) & (b)</h1>
+        <div class="solution-box">
+            <h3>(a) Current and Power when ON: [3 pts]</h3>
+            <p>When ON, total resistance = $R_{DS} + R_L = 5 + 1000 = 1005\Omega$</p>
+            <div class="equation-box" style="padding: 20px;">
+                $$I = \frac{V_{DD}}{R_{DS} + R_L} = \frac{5.0\text{ V}}{1005\text{ }\Omega} = \boxed{4.98\text{ mA}}$$
+            </div>
+            <p>Power in load: $P_L = I^2 R_L = (4.98\times10^{-3})^2 \times 1000 = \boxed{24.8\text{ mW}}$</p>
+        </div>
+        <div class="solution-box">
+            <h3>(b) Gate RC Time Constant: [2 pts]</h3>
+            <div class="equation-box">
+                $$\tau = R_G C_G = (10 \times 10^3)(50 \times 10^{-12}) = \boxed{500\text{ ns}}$$
+            </div>
+        </div>
+        <span class="slide-number">7</span>
+    </section>
+
+    <!-- Slide 8: Solution c, d -->
+    <section class="slide">
+        <h1>Solution (c) & (d)</h1>
+        <div class="solution-box">
+            <h3>(c) Time to Turn ON: [3 pts]</h3>
+            <p>Gate charges: $V_G(t) = V_{DD}(1 - e^{-t/\tau})$. Turns ON when $V_G = V_{th} = 1.5$ V:</p>
+            <div class="equation-box" style="padding: 20px;">
+                $$1.5 = 5.0(1 - e^{-t/\tau}) \implies e^{-t/\tau} = 0.7$$
+            </div>
+            <div class="equation-box">
+                $$t = -\tau \ln(0.7) = 500\text{ ns} \times 0.357 = \boxed{178\text{ ns}}$$
+            </div>
+        </div>
+        <div class="solution-box">
+            <h3>(d) Electric Field in Gate Oxide: [2 pts]</h3>
+            <div class="equation-box">
+                $$E = \frac{V_{GS}}{t_{ox}} = \frac{5.0\text{ V}}{50 \times 10^{-9}\text{ m}} = \boxed{1.0 \times 10^8\text{ V/m}}$$
+            </div>
+        </div>
+        <span class="slide-number">8</span>
+    </section>
+
+    <!-- Slide 9: Solution e -->
+    <section class="slide">
+        <h1>Solution (e)</h1>
+        <div class="solution-box">
+            <h3>(e) Dynamic Power Consumption: [3 pts]</h3>
+            <p>Energy to charge capacitor to voltage V:</p>
+            <div class="equation-box" style="padding: 20px;">
+                $$E = \frac{1}{2}CV^2 = \frac{1}{2}(50 \times 10^{-12})(5.0)^2 = 6.25 \times 10^{-10}\text{ J}$$
+            </div>
+            <p>At $f = 1$ MHz:</p>
+            <div class="equation-box">
+                $$P = E \cdot f = (6.25 \times 10^{-10})(10^6) = \boxed{0.625\text{ mW}}$$
+            </div>
+        </div>
+        <div class="highlight-box">
+            <p><strong>Key insight:</strong> Power scales with $f$ and $V^2$ — this is why chips use lower voltages!</p>
+        </div>
+        <span class="slide-number">9</span>
+    </section>
+
+    <!-- Slide 10: MOSFET Structure -->
+    <section class="slide">
+        <h1>MOSFET Structure</h1>
+        <div style="display: flex; justify-content: center;">
+            <svg width="700" height="300" class="mosfet-svg">
+                <rect x="50" y="170" width="600" height="110" fill="#ffcccc" stroke="#ff4444" stroke-width="2"/>
+                <text x="350" y="240" text-anchor="middle" fill="#cc0000" font-size="20" font-weight="bold">P-Type Substrate</text>
+
+                <rect x="80" y="140" width="120" height="80" fill="#ccccff" stroke="#4444ff" stroke-width="2"/>
+                <text x="140" y="185" text-anchor="middle" fill="#0000cc" font-size="16" font-weight="bold">N+ Source</text>
+
+                <rect x="500" y="140" width="120" height="80" fill="#ccccff" stroke="#4444ff" stroke-width="2"/>
+                <text x="560" y="185" text-anchor="middle" fill="#0000cc" font-size="16" font-weight="bold">N+ Drain</text>
+
+                <rect x="200" y="140" width="300" height="30" fill="rgba(0,255,136,0.2)" stroke="#00ff88" stroke-width="2" stroke-dasharray="5,5"/>
+                <text x="350" y="160" text-anchor="middle" fill="#00ff88" font-size="13" font-weight="bold">Channel (when ON)</text>
+
+                <rect x="200" y="110" width="300" height="30" fill="#ffffcc" stroke="#cccc00" stroke-width="2"/>
+                <text x="350" y="130" text-anchor="middle" fill="#666600" font-size="13" font-weight="bold">SiO₂ (oxide insulator)</text>
+
+                <rect x="200" y="60" width="300" height="50" fill="#888" stroke="#444" stroke-width="2"/>
+                <text x="350" y="92" text-anchor="middle" fill="white" font-size="16" font-weight="bold">Metal Gate</text>
+
+                <line x1="140" y1="140" x2="140" y2="35" stroke="#4444ff" stroke-width="4"/>
+                <circle cx="140" cy="25" r="15" fill="#4444ff"/>
+                <text x="140" y="31" text-anchor="middle" fill="white" font-size="14" font-weight="bold">S</text>
+
+                <line x1="350" y1="60" x2="350" y2="35" stroke="#888" stroke-width="4"/>
+                <circle cx="350" cy="25" r="15" fill="#8a2be2"/>
+                <text x="350" y="31" text-anchor="middle" fill="white" font-size="14" font-weight="bold">G</text>
+
+                <line x1="560" y1="140" x2="560" y2="35" stroke="#4444ff" stroke-width="4"/>
+                <circle cx="560" cy="25" r="15" fill="#4444ff"/>
+                <text x="560" y="31" text-anchor="middle" fill="white" font-size="14" font-weight="bold">D</text>
+
+                <text x="620" y="85" fill="#8a2be2" font-size="12">E-field</text>
+                <line x1="630" y1="95" x2="630" y2="155" stroke="#8a2be2" stroke-width="2" stroke-dasharray="4,2"/>
+                <polygon points="630,155 625,145 635,145" fill="#8a2be2"/>
+            </svg>
+        </div>
+        <div class="highlight-box center">
+            <p><strong>Gate voltage → Electric field through oxide → Attracts electrons → Channel forms → Current flows</strong></p>
+        </div>
+        <span class="slide-number">10</span>
+    </section>
+
+    <!-- Slide 11: How it Works -->
+    <section class="slide">
+        <h1>How MOSFETs Work</h1>
+        <div class="two-col">
+            <div>
+                <h3>The Physics:</h3>
+                <ol style="list-style: decimal; padding-left: 30px; font-size: 1.2em;">
+                    <li style="padding: 6px 0;">Apply $V_{GS}$ to gate</li>
+                    <li style="padding: 6px 0;">E-field: $E = V_{GS}/t_{ox}$</li>
+                    <li style="padding: 6px 0;">Field repels holes from surface</li>
+                    <li style="padding: 6px 0;">Field attracts electrons</li>
+                    <li style="padding: 6px 0;">Electron layer = channel</li>
+                    <li style="padding: 6px 0;">Current flows D → S</li>
+                </ol>
+            </div>
+            <div>
+                <div class="compare-box" style="margin-bottom: 20px;">
+                    <h3 style="color: #ff4444;">OFF: $V_{GS} < V_{th}$</h3>
+                    <p>No channel, no current</p>
+                </div>
+                <div class="compare-box highlight">
+                    <h3>ON: $V_{GS} > V_{th}$</h3>
+                    <p>Channel forms, current flows</p>
+                </div>
+                <div class="equation-box" style="padding: 15px;">
+                    $$V_{GS} > V_{th} \Rightarrow \text{ON}$$
+                </div>
+            </div>
+        </div>
+        <span class="slide-number">11</span>
+    </section>
+
+    <!-- Slide 12: Real Application Intro -->
+    <section class="slide">
+        <h1>Real-World Application</h1>
+        <div class="glass-box center">
+            <h2 style="font-size: 2.8em; margin-bottom: 20px;">TI-84 GPT HACK</h2>
+            <p style="font-size: 1.5em; color: #00d4ff;">I built a device that connects a TI-84 calculator to ChatGPT</p>
+        </div>
+        <div class="flow-diagram">
+            <div class="flow-node">TI-84<br/>Calculator</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node" style="border-color: #00ff88;">My PCB<br/>(MOSFETs)</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">ESP32<br/>WiFi</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">ChatGPT<br/>API</div>
+        </div>
+        <div class="highlight-box center">
+            <p style="font-size: 1.4em;">MOSFETs are the critical component that makes this work</p>
+        </div>
+        <span class="slide-number">12</span>
+    </section>
+
+    <!-- Slide 13: The Problem -->
+    <section class="slide">
+        <h1>The Engineering Challenge</h1>
+        <div class="glass-box">
+            <h3>TI-84 Link Port:</h3>
+            <ul>
+                <li><strong>Open-drain signaling</strong> — devices can only pull LOW</li>
+                <li><strong>Bidirectional</strong> — both sides send and receive</li>
+                <li><strong>Two lines:</strong> TIP (data) and RING (clock)</li>
+            </ul>
+        </div>
+        <div class="problem-box">
+            <h3>Challenge:</h3>
+            <p>I need a circuit that passes signals both directions and works with open-drain logic.</p>
+        </div>
+        <div class="equation-box">
+            <p style="font-size: 1.3em;">Solution: <strong>N-channel MOSFET level shifter</strong></p>
+        </div>
+        <span class="slide-number">13</span>
+    </section>
+
+    <!-- Slide 14: Why Resistors -->
+    <section class="slide">
+        <h1>Why Are Resistors Needed?</h1>
+        <div class="two-col">
+            <div>
+                <div class="glass-box">
+                    <h3>Pull-Up Resistors (1kΩ):</h3>
+                    <ul>
+                        <li><strong>Define HIGH state</strong> — pull line to 3.3V when idle</li>
+                        <li><strong>Limit current</strong> — when line pulled LOW: $I = V/R = 3.3\text{mA}$</li>
+                        <li><strong>Set speed</strong> — RC time constant with wire capacitance</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Without pull-ups:</strong> Lines would float at undefined voltage — random noise!</p>
+                </div>
+            </div>
+            <div>
+                <div class="glass-box">
+                    <h3>Why 1kΩ specifically?</h3>
+                    <ul>
+                        <li><strong>Too low:</strong> Wastes power, heats up</li>
+                        <li><strong>Too high:</strong> Slow rise time, noise pickup</li>
+                        <li><strong>1kΩ:</strong> Good balance — fast enough for data, low power</li>
+                    </ul>
+                    <div class="equation-box" style="padding: 15px; margin-top: 15px;">
+                        $$\tau = RC \approx 1\text{k}\Omega \times 20\text{pF} = 20\text{ns}$$
+                    </div>
+                </div>
+            </div>
+        </div>
+        <span class="slide-number">14</span>
+    </section>
+
+    <!-- Slide 15: The Circuit -->
+    <section class="slide">
+        <h1>MOSFET Level Shifter</h1>
+        <div class="two-col">
+            <div style="display: flex; justify-content: center;">
+                <svg width="380" height="350" class="mosfet-svg">
+                    <line x1="100" y1="50" x2="280" y2="50" stroke="#ff4444" stroke-width="3"/>
+                    <text x="190" y="35" text-anchor="middle" fill="#ff4444" font-size="16" font-weight="bold">3.3V</text>
+
+                    <rect x="90" y="60" width="20" height="60" fill="none" stroke="#ffa500" stroke-width="2"/>
+                    <text x="70" y="95" text-anchor="end" fill="#ffa500" font-size="14">1kΩ</text>
+                    <line x1="100" y1="50" x2="100" y2="60" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="100" y1="120" x2="100" y2="150" stroke="#00d4ff" stroke-width="2"/>
+
+                    <rect x="270" y="60" width="20" height="60" fill="none" stroke="#ffa500" stroke-width="2"/>
+                    <text x="305" y="95" text-anchor="start" fill="#ffa500" font-size="14">1kΩ</text>
+                    <line x1="280" y1="50" x2="280" y2="60" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="280" y1="120" x2="280" y2="150" stroke="#00d4ff" stroke-width="2"/>
+
+                    <g transform="translate(150, 135)">
+                        <line x1="40" y1="0" x2="40" y2="100" stroke="#00d4ff" stroke-width="3"/>
+                        <line x1="0" y1="50" x2="25" y2="50" stroke="#8a2be2" stroke-width="3"/>
+                        <line x1="25" y1="20" x2="25" y2="80" stroke="#8a2be2" stroke-width="3"/>
+                        <line x1="32" y1="20" x2="32" y2="80" stroke="#8a2be2" stroke-width="2"/>
+                        <text x="40" y="55" text-anchor="middle" fill="#00ff88" font-size="18">N</text>
+                    </g>
+
+                    <line x1="100" y1="150" x2="190" y2="150" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="190" y1="150" x2="190" y2="135" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="190" y1="235" x2="190" y2="250" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="190" y1="250" x2="280" y2="250" stroke="#00d4ff" stroke-width="2"/>
+                    <line x1="280" y1="250" x2="280" y2="150" stroke="#00d4ff" stroke-width="2"/>
+
+                    <line x1="150" y1="185" x2="120" y2="185" stroke="#8a2be2" stroke-width="2"/>
+                    <line x1="120" y1="185" x2="120" y2="50" stroke="#8a2be2" stroke-width="2"/>
+                    <circle cx="120" cy="50" r="5" fill="#8a2be2"/>
+                    <text x="130" y="120" fill="#8a2be2" font-size="12">G=3.3V</text>
+
+                    <text x="100" y="170" text-anchor="middle" fill="#00ff88" font-size="14" font-weight="bold">ESP32</text>
+                    <text x="280" y="270" text-anchor="middle" fill="#00ff88" font-size="14" font-weight="bold">TI-84</text>
+
+                    <line x1="190" y1="300" x2="190" y2="320" stroke="#888" stroke-width="2"/>
+                    <line x1="175" y1="320" x2="205" y2="320" stroke="#888" stroke-width="3"/>
+                </svg>
+            </div>
+            <div>
+                <h3>How It Works:</h3>
+                <div class="glass-box" style="padding: 20px;">
+                    <p><strong>Idle (both HIGH):</strong></p>
+                    <p class="small-text">$V_{GS} = 3.3 - 3.3 = 0V < V_{th}$</p>
+                    <p class="small-text">MOSFET OFF — sides isolated</p>
+                    <br>
+                    <p><strong>One side LOW:</strong></p>
+                    <p class="small-text">$V_{GS} = 3.3 - 0 = 3.3V > V_{th}$</p>
+                    <p class="small-text">MOSFET ON — pulls other side LOW</p>
+                </div>
+                <div class="equation-box" style="padding: 12px;">
+                    $$V_{GS} = V_G - V_S$$
+                </div>
+            </div>
+        </div>
+        <span class="slide-number">15</span>
+    </section>
+
+    <!-- Slide 16: Why MOSFET is Crucial -->
+    <section class="slide">
+        <h1>Why the MOSFET is Crucial</h1>
+        <div class="two-col">
+            <div class="glass-box">
+                <h3>Without MOSFET:</h3>
+                <ul>
+                    <li>Direct wire → signals can't be isolated</li>
+                    <li>Can't do bidirectional properly</li>
+                    <li>No automatic level translation</li>
+                </ul>
+            </div>
+            <div class="glass-box">
+                <h3>With MOSFET:</h3>
+                <ul>
+                    <li><strong>Auto-switching</strong> — $V_{GS}$ changes with signal</li>
+                    <li><strong>Bidirectional</strong> — works both ways</li>
+                    <li><strong>Isolation</strong> — sides independent when idle</li>
+                    <li><strong>Low power</strong> — no gate current</li>
+                </ul>
+            </div>
+        </div>
+        <div class="highlight-box center">
+            <p style="font-size: 1.4em;">The MOSFET's field-effect switching makes this possible</p>
+        </div>
+        <span class="slide-number">16</span>
+    </section>
+
+    <!-- Slide 17: My PCB -->
+    <section class="slide">
+        <h1>My Custom PCB</h1>
+        <div class="two-col">
+            <div>
+                <img src="built.png" alt="TI-84 GPT Hack PCB" class="project-img"/>
+            </div>
+            <div>
+                <div class="glass-box">
+                    <h3>PCB Design:</h3>
+                    <ul>
+                        <li><strong>4× 1kΩ resistors:</strong> Pull-ups for TIP & RING (both sides)</li>
+                        <li><strong>2× BSS138 MOSFETs:</strong> Level shifters for TIP & RING</li>
+                        <li><strong>XIAO ESP32-S3:</strong> WiFi microcontroller</li>
+                        <li><strong>USB-C:</strong> Power & programming</li>
+                        <li><strong>Pads:</strong> 5V, GND, TIP, RING → to calculator</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>TI-84 HACKS • ANDYPANDY • 2025</strong></p>
+                </div>
+            </div>
+        </div>
+        <span class="slide-number">17</span>
+    </section>
+
+    <!-- Slide 18: PCB Design Choices -->
+    <section class="slide">
+        <h1>Why This Design?</h1>
+        <div class="glass-box">
+            <h3>Design Decisions:</h3>
+            <table>
+                <tr>
+                    <th>Choice</th>
+                    <th>Reason</th>
+                </tr>
+                <tr>
+                    <td>BSS138 MOSFETs</td>
+                    <td>Low $V_{th}$ (~1.5V), works with 3.3V logic, cheap</td>
+                </tr>
+                <tr>
+                    <td>1kΩ pull-ups</td>
+                    <td>Fast rise time (~20ns), low power (~3mA max)</td>
+                </tr>
+                <tr>
+                    <td>4 resistors total</td>
+                    <td>Two per line: one on ESP32 side, one on TI-84 side</td>
+                </tr>
+                <tr>
+                    <td>XIAO ESP32</td>
+                    <td>Tiny, built-in USB-C, WiFi, enough GPIO</td>
+                </tr>
+                <tr>
+                    <td>Solder pads</td>
+                    <td>Connect wires to calculator's link port</td>
+                </tr>
+            </table>
+        </div>
+        <span class="slide-number">18</span>
+    </section>
+
+    <!-- Slide 19: Complete System -->
+    <section class="slide">
+        <h1>Complete System</h1>
+        <div class="flow-diagram" style="flex-direction: column; gap: 20px;">
+            <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; justify-content: center;">
+                <div class="flow-node" style="min-width: 120px;">
+                    <strong>TI-84</strong><br/>
+                    <span style="font-size: 0.8em;">BASIC</span>
+                </div>
+                <span class="flow-arrow">↔</span>
+                <div class="flow-node" style="border-color: #ffa500; min-width: 120px;">
+                    <strong>Link</strong><br/>
+                    <span style="font-size: 0.8em;">TIP+RING</span>
+                </div>
+                <span class="flow-arrow">↔</span>
+                <div class="flow-node" style="border-color: #00ff88; min-width: 120px;">
+                    <strong>MOSFETs</strong><br/>
+                    <span style="font-size: 0.8em;">BSS138</span>
+                </div>
+                <span class="flow-arrow">↔</span>
+                <div class="flow-node" style="border-color: #8a2be2; min-width: 120px;">
+                    <strong>ESP32</strong><br/>
+                    <span style="font-size: 0.8em;">WiFi</span>
+                </div>
+                <span class="flow-arrow">↔</span>
+                <div class="flow-node" style="min-width: 120px;">
+                    <strong>GPT</strong><br/>
+                    <span style="font-size: 0.8em;">API</span>
+                </div>
+            </div>
+        </div>
+        <div class="glass-box">
+            <h3>Data Flow:</h3>
+            <ol style="list-style: decimal; padding-left: 30px;">
+                <li>User types question on calculator</li>
+                <li>TI-84 sends bytes via link port (open-drain)</li>
+                <li>MOSFETs transfer signals to ESP32</li>
+                <li>ESP32 sends to ChatGPT over WiFi</li>
+                <li>Response comes back the same way</li>
+            </ol>
+        </div>
+        <span class="slide-number">19</span>
+    </section>
+
+    <!-- Slide 20: Conclusion -->
+    <section class="slide">
+        <h1>Conclusion</h1>
+        <div class="glass-box center">
+            <p style="font-size: 1.8em;">AP Physics C concepts directly enable real technology</p>
+        </div>
+        <div class="flow-diagram">
+            <div class="flow-node">E = V/d</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">$V_{GS} > V_{th}$</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">τ = RC</div>
+            <span class="flow-arrow">→</span>
+            <div class="flow-node">Calculator + AI</div>
+        </div>
+        <div class="highlight-box center">
+            <p style="font-size: 1.5em;"><strong>2 MOSFETs + 4 resistors = Calculator connected to ChatGPT</strong></p>
+        </div>
+        <p class="center" style="margin-top: 50px; font-size: 2em; color: #8a2be2;">Questions?</p>
+        <span class="slide-number">20</span>
+    </section>
+
+    <script>
+        const fieldLines = document.getElementById('fieldLines');
+        for (let i = 0; i < 20; i++) {
+            const line = document.createElement('div');
+            line.className = 'field-line';
+            line.style.left = Math.random() * 100 + '%';
+            line.style.animationDelay = Math.random() * 3 + 's';
+            line.style.height = (50 + Math.random() * 100) + 'px';
+            fieldLines.appendChild(line);
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const progress = (scrollTop / docHeight) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+        });
+    </script>
+</body>
+</html>

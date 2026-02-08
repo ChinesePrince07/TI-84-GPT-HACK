@@ -37,9 +37,24 @@ Lbl X0:
 Stop
 
 Lbl K0:
-Menu("SETTINGS","CONNECT",C0,"DISCONNECT",D0,"UPDATE",U0,"BACK",B0)
+Menu("SETTINGS","CONNECT",C0,"DISCONNECT",D0,"SETUP",W0,"UPDATE",U0,"BACK",B0)
 
 Lbl B0:
+Goto Q1
+
+Lbl W0:
+15->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp Str1
+Disp "CONNECT TO 'CALC'"
+Disp "WIFI TO CONFIGURE"
+Pause
 Goto Q1
 
 

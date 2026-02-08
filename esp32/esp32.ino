@@ -16,7 +16,7 @@
 #include <DNSServer.h>
 
 // Default server URL
-#define SERVER "https://jemma-nonrotating-ayden.ngrok-free.dev"
+#define SERVER "https://ti84-gpt-server-production.up.railway.app"
 #define SECURE
 
 // Captive portal settings
@@ -94,6 +94,7 @@ void fetch_chats();
 void send_chat();
 void program_list();
 void fetch_program();
+void setup_wifi();
 
 struct Command {
   int id;
@@ -117,10 +118,11 @@ struct Command commands[] = {
   { 12, "send_chat", 2, send_chat, true },
   { 13, "program_list", 1, program_list, true },
   { 14, "fetch_program", 1, fetch_program, true },
+  { 15, "setup_wifi", 0, setup_wifi, false },
 };
 
 constexpr int NUMCOMMANDS = sizeof(commands) / sizeof(struct Command);
-constexpr int MAXCOMMAND = 14;
+constexpr int MAXCOMMAND = 15;
 
 uint8_t header[MAXHDRLEN];
 uint8_t data[MAXDATALEN];
@@ -318,12 +320,10 @@ void tryAutoConnect() {
       Serial.print("IP: ");
       Serial.println(WiFi.localIP());
     } else {
-      Serial.println("\nFailed to connect, starting captive portal");
-      startCaptivePortal();
+      Serial.println("\nFailed to connect. Use SETUP in calculator to configure WiFi.");
     }
   } else {
-    Serial.println("No saved credentials, starting captive portal");
-    startCaptivePortal();
+    Serial.println("No saved credentials. Use SETUP in calculator to configure WiFi.");
   }
 }
 
@@ -677,6 +677,16 @@ void connect() {
 void disconnect() {
   WiFi.disconnect(true);
   setSuccess("disconnected");
+}
+
+void setup_wifi() {
+  // Stop any existing WiFi connection
+  WiFi.disconnect(true);
+  delay(100);
+
+  // Start the captive portal
+  startCaptivePortal();
+  setSuccess("SETUP: connect to 'calc' WiFi");
 }
 
 void gpt() {

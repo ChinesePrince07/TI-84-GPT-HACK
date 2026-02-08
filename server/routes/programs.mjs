@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import fs from "fs";
 import _ from "lodash";
-import * as p8 from "../../prepare8xp.mjs";
+import * as p8 from "../prepare8xp.mjs";
 
 export function programs() {
   const router = express.Router();
