@@ -70,9 +70,9 @@ Goto M1
 
 Lbl G0
 ClrHome
-Disp "ANDYGPT"
-Disp ""
-Input "ASK: ",Str0
+Output(1,1,"ANDYGPT")
+Output(3,1,">")
+Input "",Str0
 ClrHome
 Disp "THINKING..."
 2->C
