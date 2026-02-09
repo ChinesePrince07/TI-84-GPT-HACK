@@ -22,7 +22,7 @@
 #define SECURE
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.1.4"
+#define FIRMWARE_VERSION "1.1.5"
 
 // Captive portal settings
 #define AP_SSID "calc"
