@@ -22,7 +22,7 @@
 #define SECURE
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.1.5"
+#define FIRMWARE_VERSION "1.1.6"
 
 // Captive portal settings
 #define AP_SSID "calc"
@@ -36,7 +36,6 @@ bool portalActive = false;
 // Stored WiFi credentials
 String storedSSID = "";
 String storedPass = "";
-String storedChatName = "calculator";
 
 // #define CAMERA
 
@@ -95,8 +94,6 @@ void snap();
 void solve();
 void image_list();
 void fetch_image();
-void fetch_chats();
-void send_chat();
 void program_list();
 void fetch_program();
 void setup_wifi();
@@ -132,8 +129,6 @@ struct Command commands[] = {
   { 8, "solve", 1, solve, true },
   { 9, "image_list", 1, image_list, true },
   { 10, "fetch_image", 1, fetch_image, true },
-  { 11, "fetch_chats", 2, fetch_chats, true },
-  { 12, "send_chat", 2, send_chat, true },
   { 13, "program_list", 1, program_list, true },
   { 14, "fetch_program", 1, fetch_program, true },
   { 15, "setup_wifi", 0, setup_wifi, false },
@@ -262,8 +257,6 @@ const char* portalHTML = R"rawliteral(
             <input type="text" name="ssid" placeholder="Enter your WiFi SSID" required>
             <label>WiFi Password</label>
             <input type="password" name="password" placeholder="Enter your WiFi password">
-            <label>Chat Name (optional)</label>
-            <input type="text" name="chatname" placeholder="Your display name" value="calculator">
             <button type="submit">Save & Connect</button>
         </form>
         <div class="footer">TI-84 GPT HACK by Andy</div>
@@ -300,18 +293,15 @@ void handleRoot() {
 void handleSave() {
   storedSSID = webServer.arg("ssid");
   storedPass = webServer.arg("password");
-  storedChatName = webServer.arg("chatname");
 
   // Save to preferences
   prefs.begin("wifi", false);
   prefs.putString("ssid", storedSSID);
   prefs.putString("pass", storedPass);
-  prefs.putString("chatname", storedChatName);
   prefs.end();
 
   Serial.println("Saved WiFi credentials:");
   Serial.println("SSID: " + storedSSID);
-  Serial.println("Chat Name: " + storedChatName);
 
   webServer.send(200, "text/html", successHTML);
 
@@ -351,7 +341,6 @@ void loadSavedCredentials() {
   prefs.begin("wifi", true);
   storedSSID = prefs.getString("ssid", "");
   storedPass = prefs.getString("pass", "");
-  storedChatName = prefs.getString("chatname", "calculator");
   prefs.end();
 }
 
@@ -1176,41 +1165,6 @@ void fetch_image() {
   frame[0] = realsize & 0xff;
   frame[1] = (realsize >> 8) & 0xff;
   memcpy(&frame[2], response, 756);
-
-  setSuccess(response);
-}
-
-void fetch_chats() {
-  int room = realArgs[0];
-  int page = realArgs[1];
-  auto url = String(SERVER) + String("/chats/messages?p=") + urlEncode(String(page)) + String("&c=") + urlEncode(String(room));
-
-  size_t realsize = 0;
-  if (makeRequest(url, response, MAXSTRARGLEN, &realsize)) {
-    setError("error making request");
-    return;
-  }
-
-  Serial.print("response: ");
-  Serial.println(response);
-
-  setSuccess(response);
-}
-
-void send_chat() {
-  int room = realArgs[0];
-  const char* msg = strArgs[1];
-
-  auto url = String(SERVER) + String("/chats/send?c=") + urlEncode(String(room)) + String("&m=") + urlEncode(String(msg)) + String("&id=") + urlEncode(storedChatName);
-
-  size_t realsize = 0;
-  if (makeRequest(url, response, MAXSTRARGLEN, &realsize)) {
-    setError("error making request");
-    return;
-  }
-
-  Serial.print("response: ");
-  Serial.println(response);
 
   setSuccess(response);
 }

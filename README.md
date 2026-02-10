@@ -10,7 +10,7 @@ A hardware mod that gives your TI-84 calculator internet access, ChatGPT integra
 
 ## About
 
-This project turns your dusty graphing calculator into a WiFi-enabled device capable of querying ChatGPT, downloading programs over the air, and chatting with other modded calculators.
+This project turns your dusty graphing calculator into a WiFi-enabled device capable of querying ChatGPT and downloading programs over the air.
 
 The original concept came from ChromaLock, who made a [video about it](https://www.youtube.com/watch?v=Bicjxl4EcJg) back in 2024. His repo got nuked, so I rebuilt the whole thing from scratch based on what I could piece together. Most of the code, PCB design, and implementation is my own work at this point.
 
@@ -25,7 +25,6 @@ The original concept came from ChromaLock, who made a [video about it](https://w
 - Wi-Fi connectivity via ESP32 with **captive portal configuration**
 - Program downloads over the air
 - Image display support (96x63 monochrome)
-- Chat functionality
 - **OTA updates** - update both ESP32 firmware and calculator program wirelessly
 - **Pre-configured server** - no need to run your own!
 
@@ -154,7 +153,6 @@ To check your current version and the latest available, go to **Settings → VER
 ## Planned Features
 
 - Multi-page GPT responses
-- Chat history
 - Basic web browsing
 - Camera support (ESP32-S3)
 
