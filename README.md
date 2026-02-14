@@ -26,6 +26,7 @@ The original concept came from ChromaLock, who made a [video about it](https://w
 - Program downloads over the air
 - Image display support (96x63 monochrome)
 - **OTA updates** - update both ESP32 firmware and calculator program wirelessly
+- **Deep sleep** - ESP32 sleeps after 30 seconds of inactivity to save battery, wakes instantly when the calculator sends a command
 - **Pre-configured server** - no need to run your own!
 
 ## How It Works

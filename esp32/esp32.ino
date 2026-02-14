@@ -16,18 +16,22 @@
 #include <WebServer.h>
 #include <DNSServer.h>
 #include <HTTPUpdate.h>
+#include "esp_sleep.h"
 
 // Default server URL
 #define SERVER "https://api.andypandy.org"
 #define SECURE
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.1.6"
+#define FIRMWARE_VERSION "1.1.7"
 
 // Captive portal settings
 #define AP_SSID "calc"
 #define AP_PASS ""
 #define DNS_PORT 53
+
+// Deep sleep idle timeout (milliseconds)
+#define IDLE_TIMEOUT_MS 30000UL
 
 WebServer webServer(80);
 DNSServer dnsServer;
@@ -69,6 +73,8 @@ double realArgs[MAXARGS];
 
 // the command to execute
 int command = -1;
+// last time we received communication from the calculator
+unsigned long lastActivityMillis = 0;
 // whether or not the operation has completed
 bool status = 0;
 // whether or not the operation failed
@@ -373,6 +379,11 @@ void setup() {
   Serial.begin(115200);
   Serial.println("[CBL]");
 
+  esp_sleep_wakeup_cause_t wakeup_reason = esp_sleep_get_wakeup_cause();
+  if (wakeup_reason == ESP_SLEEP_WAKEUP_GPIO) {
+    Serial.println("[woke from deep sleep]");
+  }
+
   cbl.setLines(TIP, RING);
   cbl.resetLines();
   cbl.setupCallbacks(header, data, MAXDATALEN, onReceived, onRequest);
@@ -483,6 +494,21 @@ void setup() {
 void (*queued_action)() = NULL;
 unsigned long queued_action_time = 0;
 
+void enterDeepSleep() {
+  Serial.println("[entering deep sleep]");
+  Serial.flush();
+
+  if (WiFi.isConnected()) {
+    WiFi.disconnect(true);
+    delay(100);
+  }
+  WiFi.mode(WIFI_OFF);
+
+  // Wake on GPIO3 (TIP) going LOW - TI link protocol starts by pulling line LOW
+  esp_deep_sleep_enable_gpio_wakeup(1ULL << 3, ESP_GPIO_WAKEUP_GPIO_LOW);
+  esp_deep_sleep_start();
+}
+
 void loop() {
   // Handle captive portal
   if (portalActive) {
@@ -523,9 +549,19 @@ void loop() {
     }
   }
   cbl.eventLoopTick();
+
+  // Enter deep sleep after idle timeout
+  if (command == -1
+      && queued_action == NULL
+      && !portalActive
+      && lastActivityMillis > 0
+      && (millis() - lastActivityMillis) >= IDLE_TIMEOUT_MS) {
+    enterDeepSleep();
+  }
 }
 
 int onReceived(uint8_t type, enum Endpoint model, int datalen) {
+  lastActivityMillis = millis();
   char varName = header[3];
 
   Serial.print("unlocked: ");
@@ -621,6 +657,7 @@ char varIndex(int idx) {
 }
 
 int onRequest(uint8_t type, enum Endpoint model, int* headerlen, int* datalen, data_callback* data_callback) {
+  lastActivityMillis = millis();
   char varName = header[3];
   char strIndex = header[4];
   char strname[5] = { 'S', 't', 'r', varIndex(strIndex), 0x00 };
