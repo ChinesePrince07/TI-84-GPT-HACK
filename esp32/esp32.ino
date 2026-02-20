@@ -17,13 +17,15 @@
 #include <DNSServer.h>
 #include <HTTPUpdate.h>
 #include "esp_sleep.h"
+#include "esp_wifi.h"
+#include "esp_wpa2.h"
 
 // Default server URL
 #define SERVER "https://api.andypandy.org"
 #define SECURE
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.1.8"
+#define FIRMWARE_VERSION "1.3.8"
 
 // Captive portal settings
 #define AP_SSID "calc"
@@ -31,7 +33,7 @@
 #define DNS_PORT 53
 
 // Deep sleep idle timeout (milliseconds)
-#define IDLE_TIMEOUT_MS 30000UL
+#define IDLE_TIMEOUT_MS 120000UL
 
 WebServer webServer(80);
 DNSServer dnsServer;
@@ -40,7 +42,10 @@ bool portalActive = false;
 // Stored WiFi credentials
 String storedSSID = "";
 String storedPass = "";
+String storedEapUser = "";
 char sessionId[16] = "";
+char scanResults[8][33];
+int scanResultCount = 0;
 
 // #define CAMERA
 
@@ -92,6 +97,24 @@ char response[MAXHTTPRESPONSELEN];
 // image variable (96x63)
 uint8_t frame[PICVARSIZE] = { PICSIZE & 0xff, PICSIZE >> 8 };
 
+// Decode case: lowercase by default, (X) for uppercase
+void decodeCasing(char* str) {
+  char tmp[MAXSTRARGLEN];
+  int j = 0;
+  for (int i = 0; str[i] && j < MAXSTRARGLEN - 1; i++) {
+    if (str[i] == '(' && str[i+1] && str[i+2] == ')') {
+      tmp[j++] = str[i+1];  // keep original (uppercase)
+      i += 2;  // skip past )
+    } else if (str[i] >= 'A' && str[i] <= 'Z') {
+      tmp[j++] = str[i] + 32;  // lowercase
+    } else {
+      tmp[j++] = str[i];
+    }
+  }
+  tmp[j] = '\0';
+  strcpy(str, tmp);
+}
+
 void connect();
 void disconnect();
 void gpt();
@@ -119,6 +142,13 @@ void weather();
 void translate();
 void define();
 void units();
+void double_integral();
+void get_mac();
+void set_mac();
+void wifi_scan();
+void wifi_connect();
+void eduroam_connect();
+void beginEnterprise(const char* ssid, const char* user, const char* pass);
 void _sendLauncher();
 
 struct Command {
@@ -157,10 +187,16 @@ struct Command commands[] = {
   { 23, "translate", 1, translate, true },
   { 24, "define", 1, define, true },
   { 25, "units", 1, units, true },
+  { 12, "get_mac", 0, get_mac, false },
+  { 18, "set_mac", 1, set_mac, false },
+  { 19, "wifi_scan", 0, wifi_scan, false },
+  { 30, "wifi_connect", 2, wifi_connect, false },
+  { 31, "double_integral", 1, double_integral, true },
+  { 32, "eduroam_connect", 0, eduroam_connect, false },
 };
 
 constexpr int NUMCOMMANDS = sizeof(commands) / sizeof(struct Command);
-constexpr int MAXCOMMAND = 29;
+constexpr int MAXCOMMAND = 32;
 
 uint8_t header[MAXHDRLEN];
 uint8_t data[MAXDATALEN];
@@ -257,6 +293,11 @@ const char* portalHTML = R"rawliteral(
         input { width: 100%; padding: 14px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 16px; }
         input:focus { outline: none; border-color: #4a6cf7; }
         button { width: 100%; padding: 16px; background: linear-gradient(135deg, #4a6cf7 0%, #6366f1 100%); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        .tabs { display: flex; margin-bottom: 24px; border-bottom: 2px solid #e0e0e0; }
+        .tab { flex: 1; padding: 12px; text-align: center; cursor: pointer; font-weight: 600; color: #999; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+        .tab.active { color: #4a6cf7; border-bottom-color: #4a6cf7; }
+        .form { display: none; }
+        .form.active { display: block; }
         .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #999; }
     </style>
 </head>
@@ -265,15 +306,40 @@ const char* portalHTML = R"rawliteral(
         <div class="logo"><img src="data:image/jpeg;base64,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"></div>
         <h1>TI-84 WiFi Setup</h1>
         <p class="subtitle">Configure your calculator's WiFi connection</p>
-        <form action="/save" method="POST">
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('wifi')">WiFi</div>
+            <div class="tab" onclick="switchTab('eduroam')">Eduroam</div>
+        </div>
+        <form id="wifi-form" class="form active" action="/save" method="POST">
             <label>WiFi Network Name</label>
             <input type="text" name="ssid" placeholder="Enter your WiFi SSID" required>
             <label>WiFi Password</label>
             <input type="password" name="password" placeholder="Enter your WiFi password">
             <button type="submit">Save & Connect</button>
         </form>
+        <form id="eduroam-form" class="form" action="/save" method="POST">
+            <input type="hidden" name="ssid" value="eduroam">
+            <label>Username</label>
+            <input type="text" name="username" placeholder="user@school.edu" required>
+            <label>Password</label>
+            <input type="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">Connect to Eduroam</button>
+        </form>
         <div class="footer">TI-84 GPT HACK by Andy</div>
     </div>
+    <script>
+    function switchTab(t){
+        document.querySelectorAll('.tab').forEach(e=>e.classList.remove('active'));
+        document.querySelectorAll('.form').forEach(e=>e.classList.remove('active'));
+        if(t==='eduroam'){
+            document.querySelectorAll('.tab')[1].classList.add('active');
+            document.getElementById('eduroam-form').classList.add('active');
+        }else{
+            document.querySelectorAll('.tab')[0].classList.add('active');
+            document.getElementById('wifi-form').classList.add('active');
+        }
+    }
+    </script>
 </body>
 </html>
 )rawliteral";
@@ -306,11 +372,16 @@ void handleRoot() {
 void handleSave() {
   storedSSID = webServer.arg("ssid");
   storedPass = webServer.arg("password");
+  storedEapUser = webServer.arg("username");
 
-  // Save to preferences
   prefs.begin("wifi", false);
   prefs.putString("ssid", storedSSID);
   prefs.putString("pass", storedPass);
+  if (storedEapUser.length() > 0) {
+    prefs.putString("eap_user", storedEapUser);
+  } else {
+    prefs.remove("eap_user");
+  }
   prefs.end();
 
   Serial.println("Saved WiFi credentials:");
@@ -321,9 +392,13 @@ void handleSave() {
   delay(2000);
   portalActive = false;
 
-  // Try to connect
   WiFi.softAPdisconnect(true);
-  WiFi.begin(storedSSID.c_str(), storedPass.c_str());
+  if (storedEapUser.length() > 0) {
+    Serial.println("Connecting via WPA2-Enterprise");
+    beginEnterprise(storedSSID.c_str(), storedEapUser.c_str(), storedPass.c_str());
+  } else {
+    WiFi.begin(storedSSID.c_str(), storedPass.c_str());
+  }
 }
 
 void handleNotFound() {
@@ -354,17 +429,49 @@ void loadSavedCredentials() {
   prefs.begin("wifi", true);
   storedSSID = prefs.getString("ssid", "");
   storedPass = prefs.getString("pass", "");
+  storedEapUser = prefs.getString("eap_user", "");
   prefs.end();
+}
+
+void beginEnterprise(const char* ssid, const char* user, const char* pass) {
+  Serial.println("=== Enterprise Connect ===");
+  Serial.print("SSID: "); Serial.println(ssid);
+  Serial.print("User: "); Serial.println(user);
+
+  WiFi.disconnect(true);
+  delay(500);
+  WiFi.mode(WIFI_STA);
+  delay(500);
+
+  esp_wifi_sta_wpa2_ent_set_identity((uint8_t*)user, strlen(user));
+  esp_wifi_sta_wpa2_ent_set_username((uint8_t*)user, strlen(user));
+  esp_wifi_sta_wpa2_ent_set_password((uint8_t*)pass, strlen(pass));
+  esp_wifi_sta_wpa2_ent_set_ttls_phase2_method(ESP_EAP_TTLS_PHASE2_MSCHAPV2);
+  esp_wifi_sta_wpa2_ent_set_disable_time_check(true);
+
+  esp_err_t err = esp_wifi_sta_wpa2_ent_enable();
+  Serial.print("wpa2_ent_enable: ");
+  Serial.println(err);
+
+  WiFi.begin(ssid);
+  Serial.println("WiFi.begin called");
 }
 
 void tryAutoConnect() {
   if (storedSSID.length() > 0) {
     Serial.println("Found saved credentials, connecting...");
     Serial.println("SSID: " + storedSSID);
-    WiFi.begin(storedSSID.c_str(), storedPass.c_str());
 
+    if (storedEapUser.length() > 0) {
+      Serial.println("Using WPA2-Enterprise");
+      beginEnterprise(storedSSID.c_str(), storedEapUser.c_str(), storedPass.c_str());
+    } else {
+      WiFi.begin(storedSSID.c_str(), storedPass.c_str());
+    }
+
+    int maxAttempts = (storedEapUser.length() > 0) ? 60 : 20;
     int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    while (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
       delay(500);
       Serial.print(".");
       attempts++;
@@ -492,6 +599,14 @@ void setup() {
     prefs.end();
   }
 
+  // Set hardcoded MAC address
+  {
+    uint8_t mac[6] = {0x24, 0xFD, 0xFA, 0x0B, 0x80, 0xBF};
+    WiFi.mode(WIFI_STA);
+    esp_wifi_set_mac(WIFI_IF_STA, mac);
+    Serial.println("MAC set to 24:FD:FA:0B:80:BF");
+  }
+
   // Load saved WiFi credentials (connect when user selects CONNECT)
   loadSavedCredentials();
 
@@ -526,9 +641,9 @@ void loop() {
   if (queued_action && queued_action_time > 0 && millis() >= queued_action_time) {
     Serial.println("executing queued actions");
     void (*tmp)() = queued_action;
-    queued_action = NULL;
     queued_action_time = 0;
     tmp();
+    queued_action = NULL;
   }
   if (command >= 0 && command <= MAXCOMMAND) {
     bool found = false;
@@ -634,6 +749,7 @@ int onReceived(uint8_t type, enum Endpoint model, int datalen) {
 
         // Decode the tokens to readable text
         decodeTokenString(data + 2, tokenLen, strArgs[currentArg], MAXSTRARGLEN);
+        decodeCasing(strArgs[currentArg]);
         Serial.print("Str");
         Serial.print(currentArg);
         Serial.print(" (decoded): ");
@@ -787,9 +903,16 @@ void connect() {
   Serial.println(storedSSID);
   Serial.print("PASS: ");
   Serial.println("<hidden>");
-  WiFi.begin(storedSSID.c_str(), storedPass.c_str());
+  bool enterprise = storedEapUser.length() > 0;
+  if (enterprise) {
+    Serial.println("Using WPA2-Enterprise");
+    beginEnterprise(storedSSID.c_str(), storedEapUser.c_str(), storedPass.c_str());
+  } else {
+    WiFi.begin(storedSSID.c_str(), storedPass.c_str());
+  }
+  int maxAttempts = enterprise ? 60 : 20;  // 30s for enterprise, 10s for regular
   int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+  while (WiFi.status() != WL_CONNECTED && attempts < maxAttempts) {
     delay(500);
     attempts++;
     if (WiFi.status() == WL_CONNECT_FAILED) {
@@ -974,6 +1097,23 @@ void series() {
   setSuccess(response);
 }
 
+void double_integral() {
+  const char* expr = strArgs[0];
+  Serial.print("double integral: ");
+  Serial.println(expr);
+
+  String prompt = "Evaluate the double integral: " + String(expr) + ". Give only the answer, no explanation.";
+  auto url = String(SERVER) + String("/gpt/ask?question=") + urlEncode(prompt);
+
+  size_t realsize = 0;
+  if (makeRequest(url, response, MAXHTTPRESPONSELEN, &realsize)) {
+    setError("REQUEST FAILED");
+    return;
+  }
+
+  setSuccess(response);
+}
+
 void get_version() {
   setSuccess(FIRMWARE_VERSION);
 }
@@ -1057,6 +1197,151 @@ void units() {
   setSuccess(response);
 }
 
+void get_mac() {
+  String mac = WiFi.macAddress();
+  setSuccess(mac.c_str());
+}
+
+void set_mac() {
+  const char* macStr = strArgs[0];
+
+  if (strcmp(macStr, "RESET") == 0) {
+    prefs.begin("mac", false);
+    prefs.remove("custom");
+    prefs.end();
+    setSuccess("MAC RESET. REBOOTING");
+    delay(1000);
+    ESP.restart();
+    return;
+  }
+
+  // Parse XX:XX:XX:XX:XX:XX
+  uint8_t mac[6];
+  if (sscanf(macStr, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx", &mac[0], &mac[1], &mac[2], &mac[3], &mac[4], &mac[5]) != 6) {
+    setError("BAD FORMAT XX:XX:XX:XX:XX:XX");
+    return;
+  }
+
+  WiFi.mode(WIFI_STA);
+  if (esp_wifi_set_mac(WIFI_IF_STA, mac) != ESP_OK) {
+    setError("FAILED TO SET MAC");
+    return;
+  }
+
+  prefs.begin("mac", false);
+  prefs.putString("custom", String(macStr));
+  prefs.end();
+
+  setSuccess("MAC SET. REBOOTING");
+  delay(1000);
+  ESP.restart();
+}
+
+void wifi_scan() {
+  WiFi.mode(WIFI_STA);
+  WiFi.disconnect();
+  delay(100);
+
+  int n = WiFi.scanNetworks();
+  scanResultCount = min(n, 6);
+
+  if (n == 0) {
+    setSuccess("NO NETWORKS FOUND");
+    return;
+  }
+
+  char buf[MAXSTRARGLEN];
+  int pos = 0;
+
+  for (int i = 0; i < scanResultCount; i++) {
+    String ssid = WiFi.SSID(i);
+    strncpy(scanResults[i], ssid.c_str(), 32);
+    scanResults[i][32] = '\0';
+
+    // Format as "N:SSID" padded to 16 chars so each gets its own line on TI-84
+    ssid.toUpperCase();
+    char entry[17];
+    snprintf(entry, sizeof(entry), "%d:%-14s", i + 1, ssid.c_str());
+    entry[16] = '\0';
+    memcpy(buf + pos, entry, 16);
+    pos += 16;
+  }
+
+  buf[pos] = '\0';
+  WiFi.scanDelete();
+  setSuccess(buf);
+}
+
+void wifi_connect() {
+  int idx = (int)realArgs[0] - 1;
+  const char* password = strArgs[1];
+
+  if (idx < 0 || idx >= scanResultCount) {
+    setError("INVALID SELECTION");
+    return;
+  }
+
+  const char* ssid = scanResults[idx];
+  Serial.print("Connecting to: ");
+  Serial.println(ssid);
+
+  WiFi.begin(ssid, password);
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
+    delay(500);
+    attempts++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    storedSSID = String(ssid);
+    storedPass = String(password);
+    storedEapUser = "";
+    prefs.begin("wifi", false);
+    prefs.putString("ssid", storedSSID);
+    prefs.putString("pass", storedPass);
+    prefs.remove("eap_user");
+    prefs.end();
+    setSuccess("CONNECTED");
+  } else {
+    setError("CONNECTION FAILED");
+  }
+}
+
+void eduroam_connect() {
+  const char* user = "jennifersxq.walkerazj.687@my.csun.edu";
+  const char* pass = "wcGSRD25983356";
+  Serial.println("Eduroam connect (hardcoded credentials)");
+
+  beginEnterprise("eduroam", user, pass);
+
+  int attempts = 0;
+  while (WiFi.status() != WL_CONNECTED && attempts < 60) {
+    delay(500);
+    int status = WiFi.status();
+    Serial.print(" s=");
+    Serial.print(status);
+    attempts++;
+  }
+  Serial.println();
+  Serial.print("Final WiFi.status(): ");
+  Serial.println(WiFi.status());
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("Eduroam connected!");
+    storedSSID = "eduroam";
+    storedPass = String(pass);
+    storedEapUser = String(user);
+    prefs.begin("wifi", false);
+    prefs.putString("ssid", storedSSID);
+    prefs.putString("pass", storedPass);
+    prefs.putString("eap_user", storedEapUser);
+    prefs.end();
+    setSuccess("CONNECTED");
+  } else {
+    setError("CONNECTION FAILED");
+  }
+}
+
 char programName[256];
 char programData[4096];
 size_t programLength;
@@ -1094,21 +1379,26 @@ bool _otaFlashFirmware() {
 }
 
 void _otaUpdateSequence() {
-  // Step 1: Flash ESP32 firmware (writes to flash, no reboot yet)
+  // Step 1: Push launcher to calc first (while calc is still on and can receive it)
+  Serial.println("Pushing launcher to calculator...");
+  int result = sendProgramVariable(programName, (uint8_t*)programData, programLength);
+  _resetProgram();
+  if (result) {
+    Serial.print("Launcher push failed: ");
+    Serial.println(result);
+  } else {
+    Serial.println("Launcher pushed successfully");
+  }
+
+  // Step 2: Flash ESP32 firmware
   bool firmwareOk = _otaFlashFirmware();
 
   if (firmwareOk) {
-    // Step 2: Set flag so launcher is pushed after reboot on new firmware
-    prefs.begin("ccalc", false);
-    prefs.putBool("push_launcher", true);
-    prefs.end();
     Serial.println("Firmware flashed, rebooting...");
     delay(500);
     ESP.restart();
   } else {
-    Serial.println("Firmware flash failed, pushing launcher anyway");
-    int result = sendProgramVariable(programName, (uint8_t*)programData, programLength);
-    _resetProgram();
+    Serial.println("Firmware flash failed");
   }
 }
 
@@ -1138,11 +1428,7 @@ void ota_update() {
   Serial.print(FIRMWARE_VERSION);
   Serial.println("'");
 
-  if (serverVersion == FIRMWARE_VERSION) {
-    Serial.println("Already up to date");
-    setSuccess("UP TO DATE");
-    return;
-  }
+  Serial.println(serverVersion == FIRMWARE_VERSION ? "Same version, updating anyway" : "New version available");
 
   // Download launcher from server
   Serial.println("New version available, downloading launcher...");

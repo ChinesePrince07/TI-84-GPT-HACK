@@ -37,7 +37,10 @@ Lbl X0:
 Stop
 
 Lbl K0:
-Menu("SETTINGS","CONNECT",C0,"DISCONNECT",D0,"SETUP",W0,"UPDATE",U0,"VERSION",V0,"BACK",B0)
+Menu("SETTINGS","CONNECT",C0,"EDUROAM",E0,"SCAN WIFI",F0,"UPDATE",U0,"VERSION",V0,"MORE",H0,"BACK",B0)
+
+Lbl H0:
+Menu("MORE","SETUP",W0,"MAC",A0,"DISCONNECT",D0,"BACK",K0)
 
 Lbl B0:
 Goto Q1
@@ -160,12 +163,11 @@ Get(S)
 End
 Get(Str0)
 ClrHome
-Disp Str0
-Pause
+Pause Str0
 Goto G0
 
 Lbl M0:
-Menu("MATH","DERIVATIVE",M1,"INTEGRAL",M2,"SERIES",M3,"BACK",B0)
+Menu("MATH","DERIVATIVE",M1,"INTEGRAL",M2,"DOUBLE INT",M4,"SERIES",M3,"BACK",B0)
 
 Lbl M1:
 ClrHome
@@ -241,6 +243,35 @@ If K=45:Then
 Goto M0
 End
 Goto M3
+
+Lbl M4:
+ClrHome
+31->C
+Input "F(X,Y)=",Str0
+Input "Y LOW=",Str1
+Input "Y HIGH=",Str2
+Input "X LOW=",Str3
+Input "X HIGH=",Str4
+Str0+",Y="+Str1+" TO "+Str2+",X="+Str3+" TO "+Str4->Str0
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+ClrDraw
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+If K=45:Then
+Goto M0
+End
+Goto M4
 
 Lbl Y0:
 Menu("UTILS","TRANSLATE",Y2,"DEFINE",Y3,"BACK",B0)
@@ -391,6 +422,98 @@ Repeat K
 getKey->K
 End
 Goto Q1
+
+Lbl A0:
+Menu("MAC","VIEW MAC",A1,"CHANGE MAC",A2,"BACK",K0)
+
+Lbl A1:
+12->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Disp "MAC ADDRESS:"
+Pause Str0
+Goto A0
+
+Lbl A2:
+ClrHome
+Disp "FORMAT:"
+Disp "XX:XX:XX:XX:XX:XX"
+Disp "OR RESET"
+Input "MAC:",Str0
+18->C
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Pause Str0
+Goto A0
+
+Lbl E0:
+ClrHome
+Output(4,4,"CONNECTING...")
+32->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto K0
+
+Lbl F0:
+ClrHome
+Output(4,4,"SCANNING...")
+19->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"PRESS ENTER")
+0->K
+Repeat K=105
+getKey->K
+End
+ClrHome
+Input "NETWORK #:",N
+ClrHome
+Input "PASSWORD:",Str0
+30->C
+Send(C)
+Send(N)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto K0
 
 Lbl I0:
 GridOff

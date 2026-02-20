@@ -19,14 +19,18 @@ The original concept came from ChromaLock, who made a [video about it](https://w
 ## Features
 
 - ChatGPT integration - ask questions directly from your calculator, with **loop mode** to keep asking without returning to menu
-- **Calculus solver** - derivatives, integrals, and infinite series convergence
+- **Calculus solver** - derivatives, integrals, double integrals, and infinite series convergence
 - **Physics solver** - elastic and inelastic collision calculations
 - **Utilities** - translate text and define words
 - Wi-Fi connectivity via ESP32 with **captive portal configuration**
+- **WiFi scanner** - scan for nearby networks and connect directly from the calculator
+- **WPA2-Enterprise (eduroam)** - connect to university/enterprise WiFi networks via the captive portal
+- **MAC address spoofing** - view and change the ESP32's MAC address
+- **Smart case input** - letters default to lowercase; wrap in parentheses for uppercase, e.g. `A(B)CD` becomes `aBcd`
 - Program downloads over the air
 - Image display support (96x63 monochrome)
 - **OTA updates** - update both ESP32 firmware and calculator program wirelessly
-- **Deep sleep** - ESP32 sleeps after 30 seconds of inactivity to save battery, wakes instantly when the calculator sends a command
+- **Deep sleep** - ESP32 sleeps after 2 minutes of inactivity to save battery, wakes instantly when the calculator sends a command
 - **Pre-configured server** - no need to run your own!
 
 ## How It Works
@@ -95,8 +99,26 @@ By default, the ESP32 connects to my hosted server. If you want to run your own:
 ## Reconfiguring WiFi
 
 If you need to change WiFi settings:
-- Go to **Settings → SETUP** in the ANDYGPT program to broadcast the captive portal
+- Go to **Settings → MORE → SETUP** in the ANDYGPT program to broadcast the captive portal
+- Or use **Settings → SCAN WIFI** to scan for nearby networks and connect directly
 - Or erase ESP32 flash and re-upload the firmware
+
+## Connecting to Eduroam (University WiFi)
+
+1. Go to **Settings → MORE → SETUP** to open the captive portal
+2. Connect to the **"calc"** WiFi from your phone/computer
+3. Open `192.168.4.1` if the portal doesn't auto-open
+4. Click the **Eduroam** tab
+5. Enter your university email and password
+6. Click "Connect to Eduroam"
+
+## Case-Sensitive Input
+
+The TI-84 keyboard only types uppercase letters. To enter lowercase or mixed-case text (e.g. WiFi passwords):
+
+- All letters are **lowercase by default**
+- Wrap a letter in parentheses to make it **uppercase**: `(H)ELLO` → `Hello`
+- Numbers and symbols are unchanged: `PASSWORD123!` → `password123!`
 
 ## Using GPT
 
@@ -112,9 +134,10 @@ The GPT mode loops so you can have a continuous conversation without navigating 
 ## Using Math
 
 1. From the main menu, select **MATH**
-2. Choose **DERIVATIVE**, **INTEGRAL**, or **SERIES**
+2. Choose **DERIVATIVE**, **INTEGRAL**, **DOUBLE INT**, or **SERIES**
 3. Enter your function:
    - For derivatives/integrals: use X as the variable (e.g., `X^2`, `sin(X)`)
+   - For double integrals: enter F(X,Y), Y bounds, and X bounds when prompted
    - For series: use N as the variable (e.g., `1/N^2`, `1/2^N`)
 4. The result appears instantly
 5. Press **any key** for another calculation, **CLEAR** to go back
@@ -122,6 +145,7 @@ The GPT mode loops so you can have a continuous conversation without navigating 
 **Examples:**
 - Derivative of `X^3` → `3 X^2`
 - Integral of `X^2` → `1/3 X^3 + C`
+- Double integral of `X*Y` with Y=0..1, X=0..2
 - Series `1/N^2` → converges (pi^2/6)
 
 ## Using Physics
