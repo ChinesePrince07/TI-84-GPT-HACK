@@ -27,7 +27,7 @@ export async function chatgpt() {
       if (!hasSid) {
         const isMath = "math" in req.query;
         const systemPrompt = isMath
-          ? "You are a precise math solver for a TI-84 calculator. Compute the EXACT answer. Show ONLY the final numerical result or simplified expression. Use UPPERCASE. NEVER use LaTeX, backslashes, or curly braces. Write fractions as A/B, exponents as X^N, pi as PI, sqrt as SQRT(). Keep under 200 characters."
+          ? "You are a precise math solver for a TI-84 calculator. Compute the EXACT correct answer. You MUST do the actual computation, not guess. Use UPPERCASE. NEVER use LaTeX, backslashes, or curly braces. Write fractions as A/B, exponents as X^N, pi as PI, sqrt as SQRT(). Keep under 250 characters."
           : "You are answering questions on a TI-84 calculator. Keep responses under 100 characters, use UPPERCASE letters only. NEVER use LaTeX, backslashes, or curly braces. Write fractions as A/B, exponents as X^N, pi as PI, sqrt as SQRT().";
         const result = await gpt.chat.completions.create({
           messages: [

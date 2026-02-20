@@ -50,7 +50,7 @@ public:
 DualPrint out;
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.4.8"
+#define FIRMWARE_VERSION "1.5.0"
 
 // Captive portal settings
 #define AP_SSID "calc"
@@ -679,23 +679,9 @@ void setup() {
   // Load saved WiFi credentials
   loadSavedCredentials();
 
-  // Auto-connect to Suffield Gear on boot
-  out.println("[auto-connecting to Suffield Gear]");
+  // Auto-connect to Suffield Gear (non-blocking)
   WiFi.begin("Suffield Gear", "suffield");
-  int attempts = 0;
-  while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-    delay(500);
-    attempts++;
-    out.print(".");
-  }
-  out.println();
-  if (WiFi.status() == WL_CONNECTED) {
-    out.print("[connected! IP: ");
-    out.print(WiFi.localIP());
-    out.println("]");
-  } else {
-    out.println("[auto-connect failed, will connect manually]");
-  }
+  out.println("[auto-connecting to Suffield Gear in background]");
 
   telnetServer.begin();
   telnetServer.setNoDelay(true);
@@ -1215,7 +1201,7 @@ void avg_value() {
   out.print("average value: ");
   out.println(expr);
 
-  String prompt = "Calculate the average value: " + String(expr) + ". Use formula: avg = (1/Area) * double integral of f dA where Area = (xhigh-xlow)*(yhigh-ylow). Compute step by step, give ONLY the final number.";
+  String prompt = "Calculate the average value of a function: " + String(expr) + ". Use the formula: avg = (1/Area) * integral from xlow to xhigh of integral from ylow to yhigh of f(x,y) dy dx, where Area = (xhigh-xlow)*(yhigh-ylow). Show the setup: INTEGRAND: (show the fraction 1/Area * f(x,y)), AREA: (show the value), then compute the double integral step by step and give the FINAL ANSWER as a number or fraction.";
   auto url = String(SERVER) + String("/gpt/ask?math=1&question=") + urlEncode(prompt);
 
   size_t realsize = 0;
