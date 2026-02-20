@@ -8,6 +8,7 @@ import { images } from "./routes/images.mjs";
 import { programs } from "./routes/programs.mjs";
 
 import { firmware } from "./routes/firmware.mjs";
+import { logs } from "./routes/logs.mjs";
 dot.config();
 
 async function main() {
@@ -42,6 +43,9 @@ async function main() {
 
   // Firmware OTA updates
   app.use("/firmware", firmware());
+
+  // Remote serial monitor
+  app.use("/logs", logs());
 
   app.listen(port, () => {
     console.log(`listening on ${port}`);
