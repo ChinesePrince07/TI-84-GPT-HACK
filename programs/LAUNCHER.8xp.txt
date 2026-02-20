@@ -348,14 +348,37 @@ Repeat S
 Get(S)
 End
 Get(Str0)
+length(Str0)->L
+0->P
+Lbl M9:
 ClrHome
-Output(1,1,Str0)
+96P+1->T
+If T>L:Then
+max(P-1,0)->P
+96P+1->T
+End
+If L-T+1>96:Then
+Output(1,1,sub(Str0,T,96))
+Else
+Output(1,1,sub(Str0,T,L-T+1))
+End
+Output(7,1,"L/R=PAGE")
+Output(8,1,"CLEAR=EXIT")
 0->K
-Repeat K=45 or K=105
+Repeat max(K={24,26,45,105})
 getKey->K
 End
 If K=45
 Goto M0
+If K=24:Then
+max(P-1,0)->P
+Goto M9
+End
+If K=26:Then
+If 96(P+1)+1<=L
+P+1->P
+Goto M9
+End
 Goto M5
 
 Lbl M6:
@@ -372,14 +395,37 @@ Repeat S
 Get(S)
 End
 Get(Str0)
+length(Str0)->L
+0->P
+Lbl M8:
 ClrHome
-Output(1,1,Str0)
+96P+1->T
+If T>L:Then
+max(P-1,0)->P
+96P+1->T
+End
+If L-T+1>96:Then
+Output(1,1,sub(Str0,T,96))
+Else
+Output(1,1,sub(Str0,T,L-T+1))
+End
+Output(7,1,"L/R=PAGE")
+Output(8,1,"CLEAR=EXIT")
 0->K
-Repeat K=45 or K=105
+Repeat max(K={24,26,45,105})
 getKey->K
 End
 If K=45
 Goto M0
+If K=24:Then
+max(P-1,0)->P
+Goto M8
+End
+If K=26:Then
+If 96(P+1)+1<=L
+P+1->P
+Goto M8
+End
 Goto M6
 
 Lbl P0:

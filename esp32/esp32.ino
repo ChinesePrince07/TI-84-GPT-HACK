@@ -50,7 +50,7 @@ public:
 DualPrint out;
 
 // Firmware version (increment this when updating)
-#define FIRMWARE_VERSION "1.4.7"
+#define FIRMWARE_VERSION "1.4.8"
 
 // Captive portal settings
 #define AP_SSID "calc"
