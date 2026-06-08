@@ -7,6 +7,19 @@ import { r2GetJson, r2PutJson } from "../lib/r2.mjs";
 const CHAT_KEY = "ti84/chat/db.json";
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+// LLM endpoint config. Works with any OpenAI-compatible API (OpenRouter, Groq,
+// Together, DeepSeek, a self-hosted proxy, etc.). Leave OPENAI_BASE_URL unset to
+// use OpenAI directly. Values are trimmed because Vercel env vars can carry
+// stray trailing newlines.
+const LLM_BASE_URL = (process.env.OPENAI_BASE_URL || "").trim() || undefined;
+// One model for general/chat/vision, an optional stronger one for the math solver.
+// If only LLM_MODEL is set, the math solver uses it too.
+const LLM_MODEL = (process.env.LLM_MODEL || "").trim() || "gpt-5.4-nano";
+const LLM_MODEL_MATH =
+  (process.env.LLM_MODEL_MATH || "").trim() ||
+  (process.env.LLM_MODEL || "").trim() ||
+  "gpt-5.4";
+
 async function readDb() {
   return await r2GetJson(CHAT_KEY, { conversations: {} });
 }
@@ -20,7 +33,11 @@ export async function chatgpt() {
   // Lazy-init so a missing/invalid OPENAI_API_KEY only breaks /gpt routes,
   // not firmware OTA / programs / the rest of the server.
   let _gpt;
-  const getGpt = () => (_gpt ??= new openai.OpenAI());
+  const getGpt = () =>
+    (_gpt ??= new openai.OpenAI({
+      baseURL: LLM_BASE_URL,
+      apiKey: (process.env.OPENAI_API_KEY || "").trim(),
+    }));
 
   routes.get("/ask", async (req, res) => {
     const question = req.query.question ?? "";
@@ -43,7 +60,7 @@ export async function chatgpt() {
             { role: "system", content: systemPrompt },
             { role: "user", content: question },
           ],
-          model: isMath ? "gpt-5.4" : "gpt-5.4-nano",
+          model: isMath ? LLM_MODEL_MATH : LLM_MODEL,
         });
         res.send(result.choices[0]?.message?.content ?? "no response");
         return;
@@ -78,7 +95,7 @@ export async function chatgpt() {
         { role: "user", content: question },
       ];
 
-      const result = await getGpt().chat.completions.create({ messages, model: "gpt-5.4-nano" });
+      const result = await getGpt().chat.completions.create({ messages, model: LLM_MODEL });
       const answer = result.choices[0]?.message?.content ?? "NO RESPONSE";
 
       data.conversations[sessionId].messages.push(
@@ -157,7 +174,7 @@ export async function chatgpt() {
             ],
           },
         ],
-        model: "gpt-5.4-nano",
+        model: LLM_MODEL,
       });
 
       res.send(result.choices[0]?.message?.content ?? "no response");
