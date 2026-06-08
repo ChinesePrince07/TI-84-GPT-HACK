@@ -16,7 +16,11 @@ async function writeDb(data) {
 
 export async function chatgpt() {
   const routes = express.Router();
-  const gpt = new openai.OpenAI();
+
+  // Lazy-init so a missing/invalid OPENAI_API_KEY only breaks /gpt routes,
+  // not firmware OTA / programs / the rest of the server.
+  let _gpt;
+  const getGpt = () => (_gpt ??= new openai.OpenAI());
 
   routes.get("/ask", async (req, res) => {
     const question = req.query.question ?? "";
@@ -34,7 +38,7 @@ export async function chatgpt() {
         const systemPrompt = isMath
           ? "You are a precise math solver for a TI-84 calculator. Compute the EXACT answer. Show ONLY the final numerical result or simplified expression. Use UPPERCASE. NEVER use LaTeX, backslashes, or curly braces. Write fractions as A/B, exponents as X^N, pi as PI, sqrt as SQRT(). Keep under 200 characters."
           : "You are answering questions on a TI-84 calculator. Keep responses under 100 characters, use UPPERCASE letters only. NEVER use LaTeX, backslashes, or curly braces. Write fractions as A/B, exponents as X^N, pi as PI, sqrt as SQRT().";
-        const result = await gpt.chat.completions.create({
+        const result = await getGpt().chat.completions.create({
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: question },
@@ -74,7 +78,7 @@ export async function chatgpt() {
         { role: "user", content: question },
       ];
 
-      const result = await gpt.chat.completions.create({ messages, model: "gpt-5.4-nano" });
+      const result = await getGpt().chat.completions.create({ messages, model: "gpt-5.4-nano" });
       const answer = result.choices[0]?.message?.content ?? "NO RESPONSE";
 
       data.conversations[sessionId].messages.push(
@@ -135,7 +139,7 @@ export async function chatgpt() {
         ? `What is the answer to question ${question_number}?`
         : "What is the answer to this question?";
 
-      const result = await gpt.chat.completions.create({
+      const result = await getGpt().chat.completions.create({
         messages: [
           {
             role: "system",
