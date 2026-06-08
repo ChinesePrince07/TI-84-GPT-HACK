@@ -1,16 +1,21 @@
 import express from "express";
 import openai from "openai";
-import i264 from "image-to-base64";
 import jimp from "jimp";
-import { JSONFilePreset } from "lowdb/node";
 import crypto from "crypto";
+import { r2GetJson, r2PutJson } from "../lib/r2.mjs";
 
-const db = await JSONFilePreset("db.json", { conversations: {} });
+const CHAT_KEY = "ti84/chat/db.json";
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+async function readDb() {
+  return await r2GetJson(CHAT_KEY, { conversations: {} });
+}
+async function writeDb(data) {
+  await r2PutJson(CHAT_KEY, data);
+}
 
 export async function chatgpt() {
   const routes = express.Router();
-
   const gpt = new openai.OpenAI();
 
   routes.get("/ask", async (req, res) => {
@@ -41,22 +46,22 @@ export async function chatgpt() {
       }
 
       // Chat mode with session
-      await db.read();
+      const data = await readDb();
 
       // Cleanup old conversations
       const now = Date.now();
-      for (const [id, conv] of Object.entries(db.data.conversations)) {
-        if (now - conv.created > DAY_MS) delete db.data.conversations[id];
+      for (const [id, conv] of Object.entries(data.conversations)) {
+        if (now - conv.created > DAY_MS) delete data.conversations[id];
       }
 
       let sessionId = req.query.sid;
       let history = [];
 
-      if (sessionId && db.data.conversations[sessionId]) {
-        history = db.data.conversations[sessionId].messages;
+      if (sessionId && data.conversations[sessionId]) {
+        history = data.conversations[sessionId].messages;
       } else {
         sessionId = crypto.randomBytes(4).toString("hex");
-        db.data.conversations[sessionId] = { created: now, messages: [] };
+        data.conversations[sessionId] = { created: now, messages: [] };
       }
 
       const messages = [
@@ -69,18 +74,14 @@ export async function chatgpt() {
         { role: "user", content: question },
       ];
 
-      const result = await gpt.chat.completions.create({
-        messages,
-        model: "gpt-5.4-nano",
-      });
-
+      const result = await gpt.chat.completions.create({ messages, model: "gpt-5.4-nano" });
       const answer = result.choices[0]?.message?.content ?? "NO RESPONSE";
 
-      db.data.conversations[sessionId].messages.push(
+      data.conversations[sessionId].messages.push(
         { role: "user", content: question },
         { role: "assistant", content: answer }
       );
-      await db.write();
+      await writeDb(data);
 
       res.send(`${sessionId}|${answer}`);
     } catch (e) {
@@ -98,8 +99,8 @@ export async function chatgpt() {
       return;
     }
 
-    await db.read();
-    const conv = db.data.conversations[sid];
+    const data = await readDb();
+    const conv = data.conversations[sid];
     if (!conv) {
       res.send("0/0|NO HISTORY");
       return;
@@ -116,41 +117,23 @@ export async function chatgpt() {
     res.send(`${page}/${totalPairs}|Q:${q} A:${a}`);
   });
 
-  // solve a math equation from an image.
+  // Solve a math equation from an uploaded image (in-memory, no disk write).
   routes.post("/solve", async (req, res) => {
     try {
       const contentType = req.headers["content-type"];
-      console.log("content-type:", contentType);
-
       if (contentType !== "image/jpg") {
-        res.status(400);
-        res.send(`bad content-type: ${contentType}`);
+        res.status(400).send(`bad content-type: ${contentType}`);
+        return;
       }
 
-      const image_data = await new Promise((resolve, reject) => {
-        jimp.read(req.body, (err, value) => {
-          if (err) {
-            reject(err);
-            return;
-          }
-          resolve(value);
-        });
-      });
-
-      const image_path = "./to_solve.jpg";
-
-      await image_data.writeAsync(image_path);
-      const encoded_image = await i264(image_path);
-      console.log("Encoded Image: ", encoded_image.length, "bytes");
-      console.log(encoded_image.substring(0, 100));
+      const image = await jimp.read(req.body);
+      const jpegBuffer = await image.getBufferAsync(jimp.MIME_JPEG);
+      const encoded_image = jpegBuffer.toString("base64");
 
       const question_number = req.query.n;
-
       const question = question_number
         ? `What is the answer to question ${question_number}?`
         : "What is the answer to this question?";
-
-      console.log("prompt:", question);
 
       const result = await gpt.chat.completions.create({
         messages: [
@@ -166,13 +149,7 @@ export async function chatgpt() {
                 type: "text",
                 text: `${question} Do not explain how you found the answer. If the question is multiple-choice, give the letter answer.`,
               },
-              {
-                type: "image_url",
-                image_url: {
-                  url: `data:image/jpeg;base64,${encoded_image}`,
-                  detail: "high",
-                },
-              },
+              { type: "image_url", image_url: { url: `data:image/jpeg;base64,${encoded_image}`, detail: "high" } },
             ],
           },
         ],
