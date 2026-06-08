@@ -1,0 +1,769 @@
+ClrHome
+ClrDraw
+
+Lbl Q1:
+ClrHome
+ClrDraw
+0->S
+0->E
+""->Str0
+Menu("OPERATION","SETTINGS",K0,"IMAGES",I0,"GPT",G0,"MATH",M0,"PHYSICS",P0,"EXIT",X0)
+
+Lbl C9:
+7->C
+0->S
+0->E
+
+Send(C)
+Repeat S
+Get(Pic1)
+End
+Get(Str1)
+RecallPic Pic1
+
+0->K
+Repeat max(K={45,105})
+getKey->K
+End
+
+If K=45:Then
+Goto Q1
+End
+
+Goto C9
+
+
+Lbl X0:
+Stop
+
+Lbl K0:
+Menu("SETTINGS","CONNECT",C0,"SUFFIELD",S0,"SCAN WIFI",F0,"UPDATE",U0,"VERSION",V0,"MORE",H0,"BACK",B0)
+
+Lbl H0:
+Menu("MORE","SETUP",W0,"MAC",A0,"IP",I0,"EDUROAM",E0,"DISCONNECT",D0,"BACK",K0)
+
+Lbl B0:
+Goto Q1
+
+Lbl W0:
+15->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp "BROADCASTING"
+Disp "WIFI PORTAL"
+Disp "CONNECT TO"
+Disp "WIFI: CALC"
+Pause Str1
+Goto Q1
+
+
+Lbl R0:
+ClrHome
+ClrDraw
+Stop
+
+Lbl C0:
+0->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp Str1
+Pause 
+Goto Q1
+
+Lbl D0:
+1->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp Str1
+Pause 
+Goto Q1
+
+Lbl G0:
+Menu("GPT","ASK",G1,"HISTORY",G2,"NEW CHAT",G3,"BACK",B0)
+
+Lbl G1:
+ClrHome
+3->C
+Disp "QUESTION:"
+Input "",Str0
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+ClrDraw
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+If K=45:Then
+Goto G0
+End
+Goto G1
+
+Lbl G2:
+0->P
+Lbl G4:
+ClrHome
+6->C
+Send(C)
+Send(P)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+ClrDraw
+Output(1,1,Str0)
+Output(7,1,"L/R=NAV")
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat max(K={24,26,45})
+getKey->K
+End
+If K=45:Then
+Goto G0
+End
+If K=24:Then
+max(P-1,0)->P
+Goto G4
+End
+If K=26:Then
+P+1->P
+Goto G4
+End
+
+Lbl G3:
+11->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Pause Str0
+Goto G0
+
+Lbl P0:
+Menu("PHYSICS","SOLVER",P5,"BACK",B0)
+
+Lbl M0:
+Menu("MATH","FORMULAS",M1,"REFERENCE",M3,"COORDS",M5,"SOLVER",M4,"BACK",B0)
+
+Lbl M1:
+Menu("FORMULAS","15.1 FIELDS",MA,"15.2 LINE",MB,"15.3 FT LN",MC,"15.4 GREEN",MD,"MORE",M2,"BACK",M0)
+
+Lbl M2:
+Menu("MORE","15.5 PARAM",ME,"15.6 SURF",MF,"15.7 DIV",MG,"15.8 STK",MH,"BACK",M1)
+
+Lbl M3:
+Menu("REFER","BIG 4",MI,"QUICK REF",MJ,"DECISION",MK,"MISTAKES",ML,"BACK",M0)
+
+Lbl M4:
+Menu("SOLVER","FIELDS",MN,"LINE INT",MO,"GREEN",MP,"SURFACE",MQ,"BIG THM",MR,"AUTO",MS,"BACK",M0)
+
+Lbl M5:
+Menu("COORDS","R TO C",TA,"C TO R",TB,"C TO S",TC,"S TO C",TD,"R TO S",TE,"S TO R",TF,"BACK",M0)
+
+Lbl TA:
+50->C
+12->N
+26->J
+Goto Z0
+Lbl TB:
+50->C
+13->N
+26->J
+Goto Z0
+Lbl TC:
+50->C
+14->N
+26->J
+Goto Z0
+Lbl TD:
+50->C
+15->N
+26->J
+Goto Z0
+Lbl TE:
+50->C
+16->N
+26->J
+Goto Z0
+Lbl TF:
+50->C
+17->N
+26->J
+Goto Z0
+
+Lbl MA:
+50->C
+0->N
+23->J
+Goto Z0
+Lbl MB:
+50->C
+1->N
+23->J
+Goto Z0
+Lbl MC:
+50->C
+2->N
+23->J
+Goto Z0
+Lbl MD:
+50->C
+3->N
+23->J
+Goto Z0
+Lbl ME:
+50->C
+4->N
+24->J
+Goto Z0
+Lbl MF:
+50->C
+5->N
+24->J
+Goto Z0
+Lbl MG:
+50->C
+6->N
+24->J
+Goto Z0
+Lbl MH:
+50->C
+7->N
+24->J
+Goto Z0
+Lbl MI:
+50->C
+8->N
+25->J
+Goto Z0
+Lbl MJ:
+50->C
+9->N
+25->J
+Goto Z0
+Lbl MK:
+50->C
+10->N
+25->J
+Goto Z0
+Lbl ML:
+50->C
+11->N
+25->J
+Goto Z0
+
+Lbl MN:
+"F:"->Str9
+Goto MX
+Lbl MO:
+"L:"->Str9
+Goto MX
+Lbl MP:
+"G:"->Str9
+Goto MX
+Lbl MQ:
+"S:"->Str9
+Goto MX
+Lbl MR:
+"B:"->Str9
+Goto MX
+Lbl MS:
+"A:"->Str9
+Goto MX
+
+Lbl MX:
+ClrHome
+42->C
+Disp "F(X,Y,Z):"
+Input "",Str1
+Disp "CURVE C:"
+Input "",Str2
+Str9+"F=("+Str1+"), C=("+Str2+")"->Str0
+ClrHome
+Output(4,4,"SOLVING...")
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+22->J
+Goto D8
+
+Lbl P5:
+Menu("SOLVER","CIRCUITS",SQ,"FIELDS",SF,"ENERGY",SE,"OTHER",SO,"CUSTOM",SC,"BACK",P0)
+
+Lbl SQ:
+Menu("CIRCUITS","CURRENT",V1,"VOLTAGE",V2,"RESIST",V3,"CAPAC",V4,"INDUCT",V5,"POWER",V6,"BACK",P5)
+
+Lbl SF:
+Menu("FIELDS","E FIELD",V7,"B FIELD",V8,"FLUX",V9,"POTENT",W1,"BACK",P5)
+
+Lbl SE:
+Menu("ENERGY","U CAP",W2,"U IND",W3,"CHARGE",W4,"BACK",P5)
+
+Lbl SO:
+Menu("OTHER","FORCE",W5,"EMF",W6,"TAU",W7,"FREQ",W8,"TORQUE",W9,"BACK",P5)
+
+Lbl V1:
+"FIND CURRENT IN: "->Str9
+Goto SX
+Lbl V2:
+"FIND VOLTAGE OF: "->Str9
+Goto SX
+Lbl V3:
+"FIND RESISTANCE OF: "->Str9
+Goto SX
+Lbl V4:
+"FIND CAPACITANCE OF: "->Str9
+Goto SX
+Lbl V5:
+"FIND INDUCTANCE OF: "->Str9
+Goto SX
+Lbl V6:
+"FIND POWER IN: "->Str9
+Goto SX
+Lbl V7:
+"FIND E FIELD FOR: "->Str9
+Goto SX
+Lbl V8:
+"FIND B FIELD FOR: "->Str9
+Goto SX
+Lbl V9:
+"FIND MAG FLUX THRU: "->Str9
+Goto SX
+Lbl W1:
+"FIND ELECTRIC POTENTIAL V FOR: "->Str9
+Goto SX
+Lbl W2:
+"FIND ENERGY IN CAPACITOR: "->Str9
+Goto SX
+Lbl W3:
+"FIND ENERGY IN INDUCTOR: "->Str9
+Goto SX
+Lbl W4:
+"FIND CHARGE ON: "->Str9
+Goto SX
+Lbl W5:
+"FIND FORCE ON: "->Str9
+Goto SX
+Lbl W6:
+"FIND EMF OF: "->Str9
+Goto SX
+Lbl W7:
+"FIND TIME CONSTANT TAU OF: "->Str9
+Goto SX
+Lbl W8:
+"FIND FREQUENCY OR OMEGA OF: "->Str9
+Goto SX
+Lbl W9:
+"FIND TORQUE ON: "->Str9
+Goto SX
+Lbl SC:
+""->Str9
+Goto SX
+
+Lbl SX:
+ClrHome
+41->C
+Disp "SCENARIO:"
+Input "",Str1
+Str9+Str1->Str0
+ClrHome
+Output(4,4,"SOLVING...")
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+length(Str0)->L
+0->P
+Goto P6
+
+Lbl P6:
+ClrHome
+96P+1->T
+If T>L:Then
+max(P-1,0)->P
+96P+1->T
+End
+If L-T+1>96:Then
+Output(1,1,sub(Str0,T,96))
+Else
+Output(1,1,sub(Str0,T,L-T+1))
+End
+Output(7,1,"L/R=PAGE")
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat max(K={24,26,45,105})
+getKey->K
+End
+If K=45
+Goto P0
+If K=24:Then
+max(P-1,0)->P
+Goto P6
+End
+If K=26:Then
+If 96(P+1)+1<=L
+P+1->P
+Goto P6
+End
+Goto P6
+
+Lbl Z0:
+ClrHome
+Output(4,4,"LOADING...")
+Send(C)
+Send(N)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+Goto D8
+
+Lbl U0:
+20->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+ClrHome
+Disp Str1
+Disp ""
+Disp "DO NOT TURN OFF"
+Disp "ESP WILL REBOOT"
+Disp "WHEN FLASH IS DONE"
+Disp ""
+Disp "RUN ANDYGPT AFTER"
+Stop
+
+Lbl V0:
+21->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str1)
+26->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Disp "CURRENT:"
+Disp Str1
+Disp "NEWEST:"
+Disp Str0
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto Q1
+
+Lbl A0:
+Menu("MAC","VIEW MAC",A1,"CHANGE MAC",A2,"BACK",K0)
+
+Lbl A1:
+12->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Disp "MAC ADDRESS:"
+Pause Str0
+Goto A0
+
+Lbl A2:
+ClrHome
+Disp "FORMAT:"
+Disp "XX:XX:XX:XX:XX:XX"
+Disp "OR RESET"
+Input "MAC:",Str0
+18->C
+Send(C)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Pause Str0
+Goto A0
+
+Lbl S0:
+ClrHome
+Output(4,4,"CONNECTING...")
+33->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto K0
+
+Lbl I0:
+34->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto H0
+
+Lbl E0:
+ClrHome
+Output(4,4,"CONNECTING...")
+32->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto K0
+
+Lbl F0:
+ClrHome
+Output(4,4,"SCANNING...")
+19->C
+Send(C)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"PRESS ENTER")
+0->K
+Repeat K=105
+getKey->K
+End
+ClrHome
+Input "NETWORK #:",N
+ClrHome
+Input "PASSWORD:",Str0
+30->C
+Send(C)
+Send(N)
+Send(Str0)
+0->S
+Repeat S
+Get(S)
+End
+Get(Str0)
+ClrHome
+Output(1,1,Str0)
+Output(8,1,"CLEAR=EXIT")
+0->K
+Repeat K
+getKey->K
+End
+Goto K0
+
+Lbl I0:
+GridOff
+AxesOff
+
+0->P
+~1->I
+ClrHome
+Repeat I>~1
+
+Lbl I1:
+ClrHome
+0->S
+9->C
+Send(C)
+Send(P)
+Repeat S
+Get(S)
+End
+Get(S)
+Get(Str0)
+
+Output(1,1,Str0)
+Output(6,1,"PAGE ")
+Output(6,6,P)
+Output(7,1,"L/R=NAV")
+Output(8,1,"0,1,2,3 TO SEL")
+
+0->K
+Repeat max(K={24,26,102,92,93,94,45})
+getKey->K
+End
+
+If K=45:Then
+Goto Q1
+End
+If K=24:Then
+max(P-1,0)->P
+Goto I1
+End
+If K=26:Then
+P+1->P
+Goto I1
+End
+
+If K=102:Then
+0->I
+End
+If K=92:Then
+1->I
+End
+If K=93:Then
+2->I
+End
+If K=94:Then
+3->I
+End
+
+ClrHome
+Output(4,4,"loading...")
+10->C
+(I+(P*4))->D
+Send(C)
+Send(D)
+0->S
+Repeat S
+Get(S)
+End
+Get(S)
+Get(Pic1)
+~1->I
+0->D
+ClrDraw
+RecallPic Pic1
+Pause 
+Goto I1
+End
+Pause 
+
+
+Goto Q1
+
+Lbl D8:
+length(Str0)->L
+0->P
+Lbl D9:
+ClrHome
+1->I
+0->X
+1->R
+Lbl D2:
+If I>L:Then
+X->P
+Goto D3
+End
+inString(Str0,">",I)->W
+If W=0:Then
+L-I+1->Q
+L+1->U
+Else
+W-I->Q
+W+1->U
+End
+1->H
+If Q>16:2->H
+If Q>32:3->H
+If R+H-1>7:Then
+If X=P:Goto D3
+X+1->X
+1->R
+End
+If X=P:Then
+Output(R,1,sub(Str0,I,min(Q,16)))
+If H>=2:Output(R+1,1,sub(Str0,I+16,min(Q-16,16)))
+If H>=3:Output(R+2,1,sub(Str0,I+32,Q-32))
+End
+R+H->R
+U->I
+Goto D2
+Lbl D3:
+Output(8,1,"L/R=PAGE  CLR=X")
+0->K
+Repeat max(K={24,26,45})
+getKey->K
+End
+If K=45:Then
+If J=22:Goto M4
+If J=23:Goto M1
+If J=24:Goto M2
+If J=25:Goto M3
+If J=26:Goto M5
+Goto M0
+End
+If K=24:Then
+If P>0:P-1->P
+Goto D9
+End
+If K=26:Then
+P+1->P
+Goto D9
+End
+Goto D3
