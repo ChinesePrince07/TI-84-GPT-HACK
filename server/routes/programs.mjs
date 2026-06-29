@@ -1,13 +1,16 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import _ from "lodash";
 import * as p8 from "../prepare8xp.mjs";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function programs() {
   const router = express.Router();
 
-  const programDir = path.join(process.cwd(), "programs");
+  const programDir = path.join(__dirname, "..", "programs");
 
   const programs = fs.readdirSync(programDir, {
     withFileTypes: false,
@@ -87,7 +90,7 @@ export function programs() {
 
     console.log({ program });
 
-    const bytes = Buffer.from(p8.prepare8xp(path.join(process.cwd(), "programs", program)));
+    const bytes = Buffer.from(p8.prepare8xp(path.join(__dirname, "..", "programs", program)));
 
     res.setHeader("Content-Type", "application/octet-stream");
     res.send(bytes);

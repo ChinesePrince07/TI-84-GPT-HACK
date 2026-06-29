@@ -15,7 +15,9 @@ gpt\.png
 *.csv
 !/test-images/*
 /cache/
-!blank.bmpesp32/secrets.h
+!blank.bmp
+esp32/secrets.h
+server/firmware/firmware.bin
 .DS_Store
 server/.env
 *.var

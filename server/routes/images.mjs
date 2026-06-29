@@ -1,12 +1,15 @@
 import express from "express";
 import path from "path";
 import fs from "fs";
+import { fileURLToPath } from "url";
 import _ from "lodash";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export function images() {
   const router = express.Router();
 
-  const imageDir = path.join(process.cwd(), "images");
+  const imageDir = path.join(__dirname, "..", "images");
 
   const images = fs.readdirSync(imageDir, {
     withFileTypes: false,
@@ -62,7 +65,7 @@ export function images() {
 
     console.log({ image });
 
-    res.sendFile(path.join(process.cwd(), "images", image), {
+    res.sendFile(path.join(__dirname, "..", "images", image), {
       headers: {
         "Content-Type": "application/octet-stream",
       },
