@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="410" viewBox="0 0 1200 410" role="img" aria-labelledby="title desc">
+  <title id="title">TI-84 GPT Hack</title>
+  <desc id="desc">A calculator screen sends variables over its link port to an ESP32 bridge, then out to Wi-Fi services.</desc>
+  <rect width="1200" height="410" fill="#11130F"/>
+  <g font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+    <text x="54" y="56" fill="#9BA38D" font-size="17" letter-spacing="4">LINK PORT / ESP32 / WIFI</text>
+    <text x="52" y="130" fill="#F1F0E8" font-size="61" font-weight="800">TI-84</text>
+    <text x="52" y="194" fill="#C6E56A" font-size="61" font-weight="800">GPT HACK</text>
+    <text x="54" y="246" fill="#C8CCBF" font-size="22">A network sidecar for the calculator.</text>
+    <g transform="translate(54 294)" font-size="17" font-weight="700">
+      <rect width="132" height="43" fill="#C6E56A"/>
+      <text x="66" y="28" text-anchor="middle" fill="#11130F">TI VAR</text>
+      <path d="M148 21 H204" stroke="#F1F0E8" stroke-width="3"/>
+      <path d="M194 12 L205 21 L194 30" fill="none" stroke="#F1F0E8" stroke-width="3"/>
+      <rect x="219" width="132" height="43" fill="none" stroke="#C6E56A" stroke-width="2"/>
+      <text x="285" y="28" text-anchor="middle" fill="#F1F0E8">ESP32</text>
+      <path d="M367 21 H423" stroke="#F1F0E8" stroke-width="3"/>
+      <path d="M413 12 L424 21 L413 30" fill="none" stroke="#F1F0E8" stroke-width="3"/>
+      <text x="440" y="28" fill="#C6E56A">HTTPS</text>
+    </g>
+    <text x="54" y="376" fill="#6F7666" font-size="15">FIRMWARE 1.12 · 96×63 IMAGE PATH · OTA</text>
+  </g>
+  <g transform="translate(748 30)" font-family="ui-monospace, SFMono-Regular, Menlo, monospace">
+    <rect x="0" y="0" width="352" height="350" rx="24" fill="#353A31" stroke="#77806C" stroke-width="4"/>
+    <rect x="36" y="34" width="280" height="128" rx="8" fill="#BECF8B" stroke="#0C0E0B" stroke-width="5"/>
+    <text x="54" y="66" fill="#182015" font-size="17">ANDYGPT / ONLINE</text>
+    <text x="54" y="101" fill="#182015" font-size="22" font-weight="800">ASK &gt; INTEGRATE</text>
+    <text x="54" y="132" fill="#182015" font-size="18">X^2 FROM 0 TO 1_</text>
+    <g fill="#171A16">
+      <circle cx="69" cy="215" r="23"/><circle cx="128" cy="215" r="23"/><circle cx="187" cy="215" r="23"/><circle cx="246" cy="215" r="23"/>
+      <rect x="48" y="260" width="54" height="28" rx="5"/><rect x="120" y="260" width="54" height="28" rx="5"/><rect x="192" y="260" width="54" height="28" rx="5"/><rect x="264" y="260" width="40" height="28" rx="5"/>
+      <rect x="48" y="306" width="54" height="28" rx="5"/><rect x="120" y="306" width="54" height="28" rx="5"/><rect x="192" y="306" width="54" height="28" rx="5"/><rect x="264" y="306" width="40" height="28" rx="5"/>
+    </g>
+    <path d="M352 104 H398 V64 H430" fill="none" stroke="#C6E56A" stroke-width="5"/>
+    <circle cx="430" cy="64" r="9" fill="#C6E56A"/>
+    <text x="391" y="142" fill="#C6E56A" font-size="16" transform="rotate(90 391 142)">TIP / RING</text>
+  </g>
+</svg>
