@@ -19,6 +19,9 @@ const LLM_MODEL_MATH =
   (process.env.LLM_MODEL_MATH || "").trim() ||
   (process.env.LLM_MODEL || "").trim() ||
   "gpt-5.4";
+// Optional reasoning effort for reasoning models (low/medium/high); unset = provider default.
+const LLM_REASONING = (process.env.LLM_REASONING_EFFORT || "").trim();
+const LLM_EXTRA = LLM_REASONING ? { reasoning_effort: LLM_REASONING } : {};
 
 async function readDb() {
   return await r2GetJson(CHAT_KEY, { conversations: {} });
@@ -61,6 +64,7 @@ export async function chatgpt() {
             { role: "user", content: question },
           ],
           model: isMath ? LLM_MODEL_MATH : LLM_MODEL,
+          ...LLM_EXTRA,
         });
         res.send(result.choices[0]?.message?.content ?? "no response");
         return;
@@ -95,7 +99,7 @@ export async function chatgpt() {
         { role: "user", content: question },
       ];
 
-      const result = await getGpt().chat.completions.create({ messages, model: LLM_MODEL });
+      const result = await getGpt().chat.completions.create({ messages, model: LLM_MODEL, ...LLM_EXTRA });
       const answer = result.choices[0]?.message?.content ?? "NO RESPONSE";
 
       data.conversations[sessionId].messages.push(
@@ -175,6 +179,7 @@ export async function chatgpt() {
           },
         ],
         model: LLM_MODEL,
+        ...LLM_EXTRA,
       });
 
       res.send(result.choices[0]?.message?.content ?? "no response");
