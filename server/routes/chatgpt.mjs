@@ -159,20 +159,26 @@ export async function chatgpt() {
       const question = question_number
         ? `What is the answer to question ${question_number}?`
         : "What is the answer to this question?";
+      // ?detail (W11 camera -> G2 glasses): also echo the question as read and a short reason.
+      // Without it the reply stays a bare short answer for the TI-84.
+      const detail = "detail" in req.query;
 
       const result = await getGpt().chat.completions.create({
         messages: [
           {
             role: "system",
-            content:
-              "You are a helpful math tutor, specifically designed to help with basic arithmetic, but also can answer a broad range of math questions from uploaded images. You should provide answers as succinctly as possible, and always under 100 characters. Be as accurate as possible.",
+            content: detail
+              ? "You are a helpful math tutor reading a photo of a question. Be accurate and concise. Use plain ASCII text only, no LaTeX, markdown or Unicode symbols: write fractions as A/B, exponents as X^N, sqrt as SQRT(), and words for set symbols (SUBSET, IN, UNION)."
+              : "You are a helpful math tutor, specifically designed to help with basic arithmetic, but also can answer a broad range of math questions from uploaded images. You should provide answers as succinctly as possible, and always under 100 characters. Be as accurate as possible.",
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `${question} Do not explain how you found the answer. If the question is multiple-choice, give the letter answer.`,
+                text: detail
+                  ? `${question} Reply in exactly three lines:\nQ: the question as you read it (shorten to under 150 characters if longer)\nA: the answer (if multiple-choice, the letter and its choice, e.g. B (17))\nWHY: the key reasoning in under 150 characters\nIf you cannot read the question, say so on the Q line.`
+                  : `${question} Do not explain how you found the answer. If the question is multiple-choice, give the letter answer.`,
               },
               { type: "image_url", image_url: { url: `data:image/jpeg;base64,${encoded_image}`, detail: "high" } },
             ],
