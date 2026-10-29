@@ -177,7 +177,7 @@ export async function chatgpt() {
               {
                 type: "text",
                 text: detail
-                  ? `${question} Reply in exactly three lines:\nQ: the question as you read it (shorten to under 150 characters if longer)\nA: the answer (if multiple-choice, the letter and its choice, e.g. B (17))\nWHY: the key reasoning in under 150 characters\nIf you cannot read the question, say so on the Q line.`
+                  ? `${question_number ? `Answer question ${question_number} only.` : "Answer every question visible in the photo, in order; treat sub-parts like (a), (b) as separate questions."} For each question write exactly three lines:\nQ<number>: the question as you read it (under 100 characters, shorten if needed)\nA<number>: the answer (if multiple-choice, the letter and its choice, e.g. B (17))\nWHY: the key reasoning in under 120 characters\nPut a blank line between questions. If you cannot read a question, say so on its Q line.`
                   : `${question} Do not explain how you found the answer. If the question is multiple-choice, give the letter answer.`,
               },
               { type: "image_url", image_url: { url: `data:image/jpeg;base64,${encoded_image}`, detail: "high" } },
